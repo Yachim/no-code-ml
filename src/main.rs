@@ -1,13 +1,10 @@
 mod network;
 mod utils;
-use utils::functions;
+use utils::math::dot_product;
 
 fn main() {
-    println!("{}", functions::sigmoid(1.0));
-    println!("{}", functions::sigmoid_deriv(1.0));
+    let a = vec![1.0, 2.0, 3.0];
+    let b = vec![6.0, 5.0, 4.0];
 
-    println!("{}", functions::relu(42.0));
-    println!("{}", functions::relu_deriv(42.0));
-    println!("{}", functions::relu(-42.0));
-    println!("{}", functions::relu_deriv(-42.0));
+    println!("{}", dot_product(a, b))
 }
