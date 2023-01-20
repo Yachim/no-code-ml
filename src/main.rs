@@ -1,4 +1,5 @@
 mod utils;
+mod network;
 use utils::functions;
 
 fn main() {
