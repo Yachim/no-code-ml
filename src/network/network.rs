@@ -6,4 +6,4 @@ pub struct Network<'a> {
     output: Layer<'a>,
 }
 
-impl Network<'_> {}  
+impl Network<'_> {}
