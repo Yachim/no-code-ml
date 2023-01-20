@@ -5,14 +5,13 @@ pub fn sigmoid(n: f32) -> f32 {
 }
 
 pub fn sigmoid_deriv(n: f32) -> f32 {
-    return sigmoid(n)*(1.0 - sigmoid(n));
+    return sigmoid(n) * (1.0 - sigmoid(n));
 }
 
 pub fn relu(n: f32) -> f32 {
     if n > 0.0 {
         return n;
-    }
-    else {
+    } else {
         return 0.0;
     }
 }
@@ -20,8 +19,7 @@ pub fn relu(n: f32) -> f32 {
 pub fn relu_deriv(n: f32) -> f32 {
     if n > 0.0 {
         return 1.0;
-    }
-    else {
+    } else {
         return 0.0;
     }
 }
