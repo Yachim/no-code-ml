@@ -1,3 +1,4 @@
+mod network;
 mod utils;
 use utils::functions;
 
