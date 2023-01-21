@@ -3,27 +3,23 @@ use rand::Rng;
 
 pub struct Neuron<'a> {
     /// value before activation function
-    value: f32,
+    pub value: f32,
     /// value after activation function
-    activation_value: f32,
-    bias: f32,
+    pub activation_value: f32,
+    pub bias: f32,
 
     /// connections to the previous layer
-    weights_prev: Option<Vec<f32>>,
-    neurons_prev: Option<Vec<&'a Self>>,
+    pub weights_prev: Option<Vec<f32>>,
+    pub neurons_prev: Option<Vec<&'a Self>>,
 
-    cost_func: &'a dyn Fn(f32) -> f32,
-    cost_func_derivative: &'a dyn Fn(f32) -> f32,
-    activation_func: &'a dyn Fn(f32) -> f32,
-    activation_func_derivative: &'a dyn Fn(f32) -> f32,
+    pub activation_func: &'a dyn Fn(f32) -> f32,
+    pub activation_func_derivative: &'a dyn Fn(f32) -> f32,
 }
 
 impl<'a> Neuron<'a> {
     pub fn new(
         activation_func: &'a dyn Fn(f32) -> f32,
         activation_func_derivative: &'a dyn Fn(f32) -> f32,
-        cost_func: &'a dyn Fn(f32) -> f32,
-        cost_func_derivative: &'a dyn Fn(f32) -> f32,
         prev_layer_neuron_cnt: Option<i32>,
     ) -> Self {
         let mut rng = rand::thread_rng();
@@ -46,8 +42,6 @@ impl<'a> Neuron<'a> {
             neurons_prev: None, // TODO
             bias: rng.gen(),
 
-            cost_func,
-            cost_func_derivative,
             activation_func,
             activation_func_derivative,
         }
