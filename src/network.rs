@@ -58,6 +58,9 @@ pub struct Network<'a> {
 
     /// derivative of the cost function
     cost_func_derivative: CostFunc<'a>,
+
+    /// learning rate of the network
+    learning_rate: f32,
 }
 
 impl<'a> Network<'a> {
@@ -72,6 +75,7 @@ impl<'a> Network<'a> {
         activations: Vec<&'a dyn Fn(f32) -> f32>,
         activations_derivatives: Vec<&'a dyn Fn(f32) -> f32>,
         cost_func_derivative: CostFunc<'a>,
+        learning_rate: f32,
     ) -> Self {
         assert_eq!(activations_derivatives.len(), activations.len());
         assert_eq!(activations.len(), hidden_layers.len() + 1);
@@ -127,13 +131,8 @@ impl<'a> Network<'a> {
             activations_derivatives,
             cost_func_derivative,
             out_labels,
+            learning_rate,
         }
-    }
-
-    pub fn set_input(&mut self, values: Vec<f32>) {
-        assert_eq!(values.len(), self.input.len());
-
-        self.input = values;
     }
 
     pub fn feedforward(&mut self) {}
@@ -156,6 +155,7 @@ mod tests {
             vec![&sigmoid, &sigmoid, &sigmoid],
             vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
             &mse_deriv,
+            0.5,
         );
 
         let mut total_ws = 0;
@@ -179,6 +179,7 @@ mod tests {
             vec![&sigmoid, &sigmoid, &sigmoid],
             vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
             &mse_deriv,
+            0.5,
         );
 
         let mut total_biases = 0;
@@ -200,6 +201,7 @@ mod tests {
             vec![&sigmoid, &sigmoid, &sigmoid],
             vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
             &mse_deriv,
+            0.5,
         );
 
         let mut total_neurons = 0;
@@ -222,6 +224,7 @@ mod tests {
             vec![&sigmoid],
             vec![&sigmoid_deriv],
             &mse_deriv,
+            0.5,
         );
 
         let o1 = net.layers[0][0];
@@ -239,6 +242,7 @@ mod tests {
             vec![&sigmoid, &sigmoid],
             vec![&sigmoid_deriv, &sigmoid_deriv],
             &mse_deriv,
+            0.5,
         );
 
         let o1 = net.layers[1][0];
