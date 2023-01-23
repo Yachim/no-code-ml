@@ -151,7 +151,11 @@ impl<'a> Network<'a> {
         }
     }
 
-    pub fn feedforward(&mut self) {}
+    pub fn feedforward(&mut self) {
+        for i in 0..self.layers.len() {
+            self.feedforward_layer(i);
+        }
+    }
 }
 
 #[cfg(test)]
