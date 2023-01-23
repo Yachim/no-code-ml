@@ -1,16 +1,20 @@
 use crate::utils::functions::cost::CostFunc;
+use crate::utils::math::dot_product;
 use rand::Rng;
 
-/// L = number of layers
+/// L = number of layers (except the first (input) layer)
 /// l = current layer
 /// N = number of neurons in the lth layer
 /// n = current neuron from the layer N
 /// M = number of neurons in the (l - 1)th layer
 /// m = current neuron from the layer M
 pub struct Network<'a> {
+    /// the input fields
+    input: Vec<f32>,
+
     /// outer vector has len of L
     /// each element represents a layer (l)
-    /// first (input) layer is empty
+    /// does not inluclude the first (input) layer
     ///
     /// inner vectors can have different len of N
     /// each element represents a neuron's (n) value before activation
@@ -18,6 +22,7 @@ pub struct Network<'a> {
 
     /// outer vector has len of L
     /// each element represents a layer (l)
+    /// does not inluclude the first (input) layer
     ///
     /// inner vectors can have different len of N
     /// each element represents a neuron's (n) value after activation
@@ -39,7 +44,7 @@ pub struct Network<'a> {
 
     /// outer vector has len of L
     /// each element represents a layer (l)
-    /// first (input) layer is empty
+    /// does not inluclude the first (input) layer
     ///
     /// inner vectors can have different len of N
     /// each element represents a bias of a neuron (n)
@@ -47,6 +52,7 @@ pub struct Network<'a> {
 
     /// vector has len of (L - 1)
     /// contains activation functions for all layers except the first (input) layer
+    /// does not inluclude the first (input) layer
     activations: Vec<&'a dyn Fn(f32) -> f32>,
     activations_derivatives: Vec<&'a dyn Fn(f32) -> f32>,
 
@@ -79,8 +85,10 @@ impl<'a> Network<'a> {
             .map(|&x| x)
             .collect();
 
-        let mut layers: Vec<Vec<f32>> = vec![vec![]];
-        let mut activated_layers: Vec<Vec<f32>> = vec![vec![0.0; inp_cnt]];
+        let input = vec![0.0; inp_cnt];
+
+        let mut layers: Vec<Vec<f32>> = vec![];
+        let mut activated_layers: Vec<Vec<f32>> = vec![];
 
         let mut biases: Vec<Vec<f32>> = vec![];
         let mut weights: Vec<Vec<Vec<f32>>> = vec![];
@@ -110,6 +118,7 @@ impl<'a> Network<'a> {
         }
 
         Self {
+            input,
             layers,
             activated_layers,
             weights,
@@ -120,6 +129,14 @@ impl<'a> Network<'a> {
             out_labels,
         }
     }
+
+    pub fn set_input(&mut self, values: Vec<f32>) {
+        assert_eq!(values.len(), self.input.len());
+
+        self.input = values;
+    }
+
+    pub fn feedforward(&mut self) {}
 }
 
 #[cfg(test)]
@@ -130,20 +147,16 @@ mod tests {
         cost::mse_deriv,
     };
 
-    fn net() -> Network<'static> {
-        Network::new(
+    #[test]
+    fn test_ws_cnt() {
+        let net = Network::new(
             3,
             vec![2, 3],
             vec!["1", "2"],
             vec![&sigmoid, &sigmoid, &sigmoid],
             vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
             &mse_deriv,
-        )
-    }
-
-    #[test]
-    fn test_ws_cnt() {
-        let net = net();
+        );
 
         let mut total_ws = 0;
         for i in net.weights {
@@ -155,5 +168,82 @@ mod tests {
         }
 
         assert_eq!(total_ws, 18);
+    }
+
+    #[test]
+    fn test_bias_cnt() {
+        let net = Network::new(
+            3,
+            vec![2, 3],
+            vec!["1", "2"],
+            vec![&sigmoid, &sigmoid, &sigmoid],
+            vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
+            &mse_deriv,
+        );
+
+        let mut total_biases = 0;
+        for i in net.biases {
+            for _ in i {
+                total_biases += 1;
+            }
+        }
+
+        assert_eq!(total_biases, 7);
+    }
+
+    #[test]
+    fn test_neurons_cnt() {
+        let net = Network::new(
+            3,
+            vec![2, 3],
+            vec!["1", "2"],
+            vec![&sigmoid, &sigmoid, &sigmoid],
+            vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
+            &mse_deriv,
+        );
+
+        let mut total_neurons = 0;
+        for i in net.layers {
+            for _ in i {
+                total_neurons += 1;
+            }
+        }
+        total_neurons += net.input.len();
+
+        assert_eq!(total_neurons, 10);
+    }
+
+    #[test]
+    fn test_feedforward1() {
+        let mut net = Network::new(
+            3,
+            vec![],
+            vec!["1", "2"],
+            vec![&sigmoid],
+            vec![&sigmoid_deriv],
+            &mse_deriv,
+        );
+
+        let o1 = net.layers[0][0];
+        let o2 = net.layers[0][1];
+        assert_eq!(o1, 31.0);
+        assert_eq!(o2, 26.0);
+    }
+
+    #[test]
+    fn test_feedforward2() {
+        let mut net = Network::new(
+            2,
+            vec![1],
+            vec!["1", "2"],
+            vec![&sigmoid, &sigmoid],
+            vec![&sigmoid_deriv, &sigmoid_deriv],
+            &mse_deriv,
+        );
+
+        let o1 = net.layers[1][0];
+        let o2 = net.layers[1][1];
+        assert_eq!(o1, 64.0);
+        assert_eq!(o2, 41.0);
     }
 }
