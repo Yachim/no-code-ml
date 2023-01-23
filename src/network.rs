@@ -135,6 +135,22 @@ impl<'a> Network<'a> {
         }
     }
 
+    /// feedforwards (sets values) to the layer (in layers and activated_layers) with the given index
+    fn feedforward_layer(&mut self, index: usize) {
+        let prev_layer: Vec<f32>;
+        if index == 0 {
+            prev_layer = self.input.to_owned();
+        } else {
+            prev_layer = self.activated_layers[index - 1].to_owned();
+        }
+
+        for i in 0..self.layers[index].len() {
+            self.layers[index][i] =
+                dot_product(&prev_layer, &self.weights[index][i]) + self.biases[index][i];
+            self.activated_layers[index][i] = (self.activations[index])(self.layers[index][i]);
+        }
+    }
+
     pub fn feedforward(&mut self) {}
 }
 
@@ -216,38 +232,27 @@ mod tests {
     }
 
     #[test]
-    fn test_feedforward1() {
+    fn test_feedforward_layer() {
         let mut net = Network::new(
             3,
             vec![],
-            vec!["1", "2"],
+            vec!["1", "2", "3"],
             vec![&sigmoid],
             vec![&sigmoid_deriv],
             &mse_deriv,
             0.5,
         );
 
-        let o1 = net.layers[0][0];
-        let o2 = net.layers[0][1];
-        assert_eq!(o1, 31.0);
-        assert_eq!(o2, 26.0);
-    }
+        net.input = vec![3.0, 2.0];
+        net.weights[0][0] = vec![3.0, 4.0];
+        net.weights[0][1] = vec![2.0, 4.0];
+        net.weights[0][2] = vec![3.0, 5.0];
+        net.biases[0] = vec![1.0, 1.0, 3.0];
 
-    #[test]
-    fn test_feedforward2() {
-        let mut net = Network::new(
-            2,
-            vec![1],
-            vec!["1", "2"],
-            vec![&sigmoid, &sigmoid],
-            vec![&sigmoid_deriv, &sigmoid_deriv],
-            &mse_deriv,
-            0.5,
-        );
+        net.feedforward_layer(0);
 
-        let o1 = net.layers[1][0];
-        let o2 = net.layers[1][1];
-        assert_eq!(o1, 64.0);
-        assert_eq!(o2, 41.0);
+        assert_eq!(net.layers[0][0], 18.0);
+        assert_eq!(net.layers[0][1], 15.0);
+        assert_eq!(net.layers[0][2], 22.0);
     }
 }
