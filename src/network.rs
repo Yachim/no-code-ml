@@ -137,12 +137,11 @@ impl<'a> Network<'a> {
 
     /// feedforwards (sets values) to the layer (in layers and activated_layers) with the given index
     fn feedforward_layer(&mut self, index: usize) {
-        let prev_layer: Vec<f32>;
-        if index == 0 {
-            prev_layer = self.input.to_owned();
+        let prev_layer: Vec<f32> = if index == 0 {
+            self.input.to_owned()
         } else {
-            prev_layer = self.activated_layers[index - 1].to_owned();
-        }
+            self.activated_layers[index - 1].to_owned()
+        };
 
         for i in 0..self.layers[index].len() {
             self.layers[index][i] =
