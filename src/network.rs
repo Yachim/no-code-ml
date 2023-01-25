@@ -86,7 +86,7 @@ impl<'a> Network<'a> {
         let ls: Vec<usize> = hidden_layers
             .iter()
             .chain(&[out_labels.len()])
-            .map(|&x| x)
+            .copied()
             .collect();
 
         let input = vec![0.0; inp_cnt];
