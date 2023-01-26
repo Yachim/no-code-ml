@@ -179,9 +179,23 @@ impl<'a> Network<'a> {
         }
     }
 
-    pub fn feedforward(&mut self) {
+    fn feedforward(&mut self) {
         for i in 0..self.layers.len() {
             self.feedforward_layer(i);
+        }
+    }
+
+    fn stochastic_gradient_descent(&mut self) {
+        for batch_start_index in (0..self.input_batches.len()).step_by(self.batch_size) {
+            // TODO
+
+            let batch = self.input_batches[batch_start_index..batch_start_index + self.batch_size]
+                .to_owned();
+            for input in batch.iter() {
+                self.input = input.to_vec();
+
+                self.feedforward();
+            }
         }
     }
 }
