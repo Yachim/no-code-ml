@@ -93,18 +93,13 @@ z^{(2)}_1 = {
 
 ## Derivatives of cost functions
 
-### Mean Squared Error (MSE)
-
-<!-- the definition of mse -->
-```math
-C = MSE = \sum_{j = 0}^{n_L-1}(a_j^{(L)}-y_j)^2
-```
+Suppose a universal cost function, $C$.
 
 <!-- the derivative of root -->
 ```math
-root = {
-  \frac{\partial C}{\partial a^{(L)}}
-  \frac{\partial a^{(L)}}{\partial z^{(L)}}
+root = \frac{\partial C}{\partial z^{(L)}_j} = {
+  \frac{\partial C}{\partial a^{(L)}_j}
+  \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
 }
 ```
 
@@ -112,23 +107,54 @@ root = {
   <sup>root is the common part for derivative with respect to weight, bias and activation in the previous layer</sup>
 </p>
 
+<!-- partial derivative of C with respect to w^{(L)}_{jk} -->
 ```math
-\frac{\partial C}{\partial w^{(L)}} = {
+\frac{\partial C}{\partial w^{(L)}_{jk}} = {
   root
-  \frac{\partial z^{(L)}}{\partial w^{(L)}}
+  \frac{\partial z^{(L)}_j}{\partial w^{(L)}_{jk}}
+} = {
+  \frac{\partial C}{\partial a^{(L)}_j} \cdot
+  \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} \cdot
+  a^{(L - 1)}_k
 }
 ```
 
+<!-- partial derivative of C with respect to b^{(L)}_j -->
 ```math
-\frac{\partial C}{\partial b^{(L)}} = {
+\frac{\partial C}{\partial b^{(L)}_j} = {
   root
-  \frac{\partial z^{(L)}}{\partial b^{(L)}}
+  \frac{\partial z^{(L)}_j}{\partial b^{(L)}_j}
+} = {
+  \frac{\partial C}{\partial a^{(L)}_j} \cdot
+  \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} \cdot
+  1
+} = {
+  \frac{\partial C}{\partial a^{(L)}_j} \cdot
+  \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
 }
 ```
 
+<!-- partial derivative of C with respect to a^{(L - 1)}_k -->
 ```math
-\frac{\partial C}{\partial a^{(L - 1)}} = {
+\frac{\partial C}{\partial a^{(L - 1)}_k} = {
   root
-  \frac{\partial z^{(L)}}{\partial a^{(L - 1)}}
+  \frac{\partial z^{(L)}_j}{\partial a^{(L - 1)}_k}
+} = {
+  \sum_{i=0}^{n_L - 1}
+  \frac{\partial C}{\partial a^{(L)}_j} \cdot
+  \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} \cdot
+  \frac{\partial z^{(L)}_j}{\partial a^{(L - 1)}_k}
 }
 ```
+
+### Example of the general derivatives
+TODO
+
+### Mean Squared Error (MSE)
+
+<!-- the definition of mse -->
+```math
+C = MSE = \sum_{j = 0}^{n_L-1}(a_j^{(L)}-y_j)^2
+```
+
+
