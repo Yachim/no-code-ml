@@ -100,6 +100,9 @@ Suppose a universal cost function, $C$.
 root = \frac{\partial C}{\partial z^{(L)}_j} = {
   \frac{\partial C}{\partial a^{(L)}_j}
   \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
+} = {
+  \frac{\partial C}{\partial a^{(L)}_j}
+  f'(z^{(L)}_j)
 }
 ```
 
@@ -114,7 +117,7 @@ root = \frac{\partial C}{\partial z^{(L)}_j} = {
   \frac{\partial z^{(L)}_j}{\partial w^{(L)}_{jk}}
 } = {
   \frac{\partial C}{\partial a^{(L)}_j} \cdot
-  \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} \cdot
+  f'(z^{(L)}_j) \cdot
   a^{(L - 1)}_k
 }
 ```
@@ -126,11 +129,11 @@ root = \frac{\partial C}{\partial z^{(L)}_j} = {
   \frac{\partial z^{(L)}_j}{\partial b^{(L)}_j}
 } = {
   \frac{\partial C}{\partial a^{(L)}_j} \cdot
-  \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} \cdot
+  f'(z^{(L)}_j) \cdot
   1
 } = {
   \frac{\partial C}{\partial a^{(L)}_j} \cdot
-  \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
+  f'(z^{(L)}_j)
 }
 ```
 
@@ -140,15 +143,12 @@ root = \frac{\partial C}{\partial z^{(L)}_j} = {
   root
   \frac{\partial z^{(L)}_j}{\partial a^{(L - 1)}_k}
 } = {
-  \sum_{i=0}^{n_L - 1}
+  \sum_{j=0}^{n_L - 1}
   \frac{\partial C}{\partial a^{(L)}_j} \cdot
-  \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j} \cdot
-  \frac{\partial z^{(L)}_j}{\partial a^{(L - 1)}_k}
+  f'(z^{(L)}_j) \cdot
+  w^{(L)}_{jk}
 }
 ```
-
-### Example of the general derivatives
-TODO
 
 ### Mean Squared Error (MSE)
 
