@@ -21,7 +21,7 @@ pub struct Network<'a> {
     ///
     /// inner vectors can have different len of N
     /// each element represents a neuron's (n) value before activation
-    layers: Vec<Vec<f32>>,
+    pub layers: Vec<Vec<f32>>,
 
     /// outer vector has len of L
     /// each element represents a layer (l)
