@@ -86,8 +86,6 @@ impl<'a> Network<'a> {
     ) -> Self {
         assert_eq!(activations_derivatives.len(), activations.len());
         assert_eq!(activations.len(), hidden_layers.len() + 1);
-        let mut rng = rand::thread_rng();
-
         // all layers except the input (hidden + output)
         // contains neurons count
         let ls: Vec<usize> = hidden_layers
