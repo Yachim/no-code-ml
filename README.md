@@ -150,11 +150,16 @@ root = \frac{\partial C}{\partial z^{(L)}_j} = {
 }
 ```
 
+TODO: check and explain for earlier layers
+
 ### Mean Squared Error (MSE)
 
 <!-- the definition of mse -->
 ```math
-C = MSE = \sum_{j = 0}^{n_L-1}(a_j^{(L)}-y_j)^2
+C = MSE = \sum_{j = 0}^{n_L-1}(a^{(L)}_j - y_j)^2
 ```
 
-
+<!-- the derivative of mse -->
+```math
+\frac{\partial C}{\partial a^{(L)}_j} = 2(a^{(L)}_j - y_j)
+```
