@@ -134,7 +134,10 @@ Suppose a universal cost function, $C$.
 
 <!-- the definition of mse -->
 ```math
-C = MSE = \sum_{j = 0}^{n_L-1}(a^{(L)}_j - y_j)^2
+C = MSE = {
+  \frac{1}{n_L}
+  \sum_{j = 0}^{n_L-1}(a^{(L)}_j - y_j)^2
+}
 ```
 
 <!-- the derivative of mse -->
