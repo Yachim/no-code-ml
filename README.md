@@ -12,22 +12,26 @@ Suppose we have this sample network:
 
 <!-- definition of the activation -->
 ```math
-a^{(L)}_j = f(z^{(L)}_j)
+a^{(l)}_j = f(z^{(l)}_j)
 ```
 
 Where $f$ is the activation function, e.g., sigmoid:
 
 <!-- example of activation with the sigmoid activation function -->
 ```math
-a^{(L)}_j = \sigma(z^{(L)}_j)
+a^{(l)}_j = \sigma(z^{(l)}_j)
 ```
 
 <!-- definition of z -->
 ```math
-z^{(L)}_j = \sum_{k = 0}^{n_L - 1} (a^{(L - 1)}_k w^{(L)}_{jk}) + b^{(L)}_j
+z^{(l)}_j = \sum_{k = 0}^{n_l - 1} (a^{(l - 1)}_k w^{(l)}_{jk}) + b^{(l)}_j
 ```
 <p align="center">
-  <sup>$n_L$...number of inputs in the layer L</sup>
+  <sup>$n_l$...number of inputs in the layer $l$</sup>
+</p>
+
+<p align="center">
+  <sup>$l$...any layer in the network</sup>
 </p>
 
 ## All formulas for all a and z values
