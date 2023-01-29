@@ -119,12 +119,15 @@ ReLU(z) = max(0, z)
 <!-- derivative of relu -->
 ```math
 ReLU'(z) = \left\{
-  \begin{array}{ll}
-    1 \quad \textrm{if $z > 0$} \\
-    0 \quad \textrm{if $z < 0$}
+  \begin{array}{ l l }
+    1 \qquad \textrm{if $z > 0$} \\ 0 \qquad \textrm{if $z \leq 0$*}
   \end{array}
 \right.
 ```
+
+<p align="center">
+  <sup>*The derivative at zero is not defined. The predefined function in the program returns 0.</sup>
+</p>
 
 ## Derivatives of cost functions
 
