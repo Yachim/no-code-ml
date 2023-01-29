@@ -29,7 +29,7 @@ pub struct Network<'a> {
     ///
     /// inner vectors can have different len of N
     /// each element represents a neuron's (n) value after activation
-    activated_layers: Vec<Vec<f32>>,
+    pub activated_layers: Vec<Vec<f32>>,
 
     /// same length as the last layer
     /// labels for the outputs
