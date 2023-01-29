@@ -13,7 +13,7 @@ pub struct Network<'a> {
     input_batches: Vec<Vec<f32>>,
 
     /// the input fields
-    input: Vec<f32>,
+    pub input: Vec<f32>,
 
     /// outer vector has len of L
     /// each element represents a layer (l)
@@ -43,7 +43,7 @@ pub struct Network<'a> {
     ///
     /// inner vectors can have different len of M
     /// each element represents a weight conected from neuron m to neuron n
-    weights: Vec<Vec<Vec<f32>>>,
+    pub weights: Vec<Vec<Vec<f32>>>,
 
     /// outer vector has len of L
     /// each element represents a layer (l)
@@ -57,7 +57,7 @@ pub struct Network<'a> {
     /// contains activation functions for all layers except the first (input) layer
     /// does not inluclude the first (input) layer
     activations: Vec<&'a dyn Fn(f32) -> f32>,
-    activations_derivatives: Vec<&'a dyn Fn(f32) -> f32>,
+    pub activations_derivatives: Vec<&'a dyn Fn(f32) -> f32>,
 
     /// derivative of the cost function
     cost_func_derivative: CostFunc<'a>,
