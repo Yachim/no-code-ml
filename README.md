@@ -130,39 +130,6 @@ ReLU'(z) = \left\{
 
 ## Derivatives of cost functions
 
-Suppose a universal cost function, $C$.
-
-<!-- partial derivative of C with respect to w^{(L)}_{jk} -->
-```math
-\frac{\partial C}{\partial w^{(L)}_{jk}} = {
-  \frac{\partial C}{\partial a^{(L)}_j}
-  \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
-  \frac{\partial z^{(L)}_j}{\partial w^{(L)}_{jk}}
-}
-```
-
-<!-- partial derivative of C with respect to b^{(L)}_j -->
-```math
-\frac{\partial C}{\partial b^{(L)}_j} = {
-  \frac{\partial C}{\partial a^{(L)}_j}
-  \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
-  \frac{\partial z^{(L)}_j}{\partial b^{(L)}_j}
-} 
-```
-
-<!-- partial derivative of C with respect to a^{(L - 1)}_k -->
-```math
-\frac{\partial C}{\partial a^{(L - 1)}_k} = {
-  \frac{\partial C}{\partial a^{(L)}_j}
-  \frac{\partial a^{(L)}_j}{\partial z^{(L)}_j}
-  \frac{\partial z^{(L)}_j}{\partial a^{(L - 1)}_k}
-}
-```
-
-<p align="center">
-  <sup>Where $L$ is the last layer</sup>
-</p>
-
 ### Mean Squared Error (MSE)
 
 <!-- the definition of mse -->
