@@ -95,6 +95,37 @@ z^{(2)}_1 = {
 }
 ```
 
+## Activation functions and their derivatives
+ 
+### Sigmoid
+
+<!-- definition of sigmoid activation function -->
+```math
+\sigma(z) = \frac{1}{1 + e^{-z}}
+```
+
+<!-- derivative of sigmoid -->
+```math
+\sigma'(z) = \sigma(z)(1 - \sigma(z))
+```
+
+### ReLU
+
+<!-- definition of relu activation function -->
+```math
+ReLU(z) = max(0, z)
+```
+
+<!-- derivative of relu -->
+```math
+ReLU'(z) = \left\{
+  \begin{array}{ll}
+    1 \quad \textrm{if $z > 0$} \\
+    0 \quad \textrm{if $z < 0$}
+  \end{array}
+\right.
+```
+
 ## Derivatives of cost functions
 
 Suppose a universal cost function, $C$.
@@ -214,7 +245,7 @@ Where:
 <!-- partial derivative of C with respect to a^{(l)}_j if l = L -->
 ```math
 \frac{\partial C}{\partial a^{(l)}_j} = 2(a^{(L)}_j - y_j) \qquad 
-l = L
+\textrm{if $l=L$}
 ```
 
 <p align="center">
@@ -229,4 +260,5 @@ l = L
   f'(z^{(l + 1)}_j)
   w^{(l + 1)}_{jk}
 } \qquad
-otherwise
+\textrm{otherwise}
+```
