@@ -216,16 +216,6 @@ For any layer $l$ in the network:
 }
 ```
 
-<!-- partial derivative of C with respect to a^{(l)}_k -->
-```math
-\frac{\partial C}{\partial a^{(l)}_k} = {
-  \sum_{j=0}^{n_{l + 1} - 1}
-  \frac{\partial C}{\partial a^{(l + 1)}_j}
-  f'(z^{(l + 1)}_j)
-  w^{(l + 1)}_{jk}
-}
-```
-
 Where:
 
 <!-- partial derivative of C with respect to a^{(l)}_j if l = L -->
