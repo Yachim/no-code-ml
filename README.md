@@ -187,6 +187,46 @@ C = MSE = {
   2(a^{(L)}_j - y_j)
   f'(z^{(L)}_j)
   w^{(L)}_{jk}
-  ??
 }
 ```
+
+For any layer $l$ in the network:
+
+<!-- partial derivative of C with respect to w^{(l)}_{jk} -->
+```math
+\frac{\partial C}{\partial w^{(l)}_{jk}} = {
+  \frac{\partial C}{\partial a^{(l)}_j}
+  f'(z^{(l)}_j)
+  a^{(l - 1)}_k
+}
+```
+
+<!-- partial derivative of C with respect to b^{(l)}_j -->
+```math
+\frac{\partial C}{\partial b^{(l)}_j} = {
+  \frac{\partial C}{\partial a^{(l)}_j}
+  f'(z^{(l)}_j)
+}
+```
+
+Where:
+
+<!-- partial derivative of C with respect to a^{(l)}_j if l = L -->
+```math
+\frac{\partial C}{\partial a^{(l)}_j} = 2(a^{(L)}_j - y_j) \qquad 
+l = L
+```
+
+<p align="center">
+  <sup>$L$...last layer of the network</sup>
+</p>
+
+<!-- partial derivative of C with respect to a^{(l)}_j if l != L -->
+```math
+\frac{\partial C}{\partial a^{(l)}_k} = {
+  \sum_{j=0}^{n_{L + 1} - 1}
+  \frac{\partial C}{\partial a^{(l + 1)}_j}
+  f'(z^{(l + 1)}_j)
+  w^{(l + 1)}_{jk}
+} \qquad
+otherwise
