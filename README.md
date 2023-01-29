@@ -95,6 +95,8 @@ z^{(1)}_1 = {
 ```
 
 ## Activation functions and their derivatives
+
+The activation function is noted as $f_l$ (activation function for the layer $l$). The derivative is noted as $f'_{l}$.
  
 ### Sigmoid
 
@@ -139,6 +141,10 @@ C = MSE = {
   \sum_{j = 0}^{n_L-1}(a^{(L)}_j - y_j)^2
 }
 ```
+
+<p align="center">
+  <sup>$y$...the expected values</sup>  
+</p>
 
 <!-- the derivative of mse -->
 ```math
@@ -210,6 +216,16 @@ For any layer $l$ in the network:
 }
 ```
 
+<!-- partial derivative of C with respect to a^{(l)}_k -->
+```math
+\frac{\partial C}{\partial a^{(l)}_k} = {
+  \sum_{j=0}^{n_{l + 1} - 1}
+  \frac{\partial C}{\partial a^{(l + 1)}_j}
+  f'(z^{(l + 1)}_j)
+  w^{(l + 1)}_{jk}
+}
+```
+
 Where:
 
 <!-- partial derivative of C with respect to a^{(l)}_j if l = L -->
@@ -232,3 +248,12 @@ Where:
 } \qquad
 \textrm{otherwise}
 ```
+
+## The backpropagation algorithm
+
+1) iterate all layers backwards (as `l`)
+   1) iterate neurons in the layer l (as `j`)
+      1) compute $\frac{\partial C}{\partial a^{(l)}_j}$ and save it in an array
+      2) compute $\frac{\partial C}{\partial b^{(l)}_j}$
+      3) iterate neurons in the layer $l - 1$ (as `k`)
+          1) compute $\frac{\partial C}{\partial w^{(l)}_{jk}}$
