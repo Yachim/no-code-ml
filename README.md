@@ -12,7 +12,7 @@ Suppose we have this sample network:
 
 <!-- definition of the activation -->
 ```math
-a^{(l)}_j = f(z^{(l)}_j)
+a^{(l)}_j = f_l(z^{(l)}_j)
 ```
 
 Where $f$ is the activation function, e.g., sigmoid:
@@ -39,7 +39,7 @@ z^{(l)}_j = \sum_{k = 0}^{n_{l - 1} - 1} (a^{(l - 1)}_k w^{(l)}_{jk}) + b^{(l)}_
 ### $L = 0$
 <!-- formula for a^{(0)}_0 -->
 ```math
-a^{(0)}_0 = f(z^{(0)}_0)
+a^{(0)}_0 = f_0(z^{(0)}_0)
 ```
 
 <!-- formula for z^{(0)}_0 -->
@@ -53,12 +53,12 @@ z^{(0)}_0 = {
 
 <!-- formula for a^{(0)}_1 -->
 ```math
-a^{(0)}_1 = f(z^{(0)}_1)
+a^{(0)}_1 = f_0(z^{(0)}_1)
 ```
 
-<!-- formula for z^{(L)}_1 -->
+<!-- formula for z^{(1)}_1 -->
 ```math
-z^{(2)}_1 = {
+z^{(0)}_1 = {
   X_0 w^{(0)}_{10} + 
   X_1 w^{(0)}_{11} + 
   b^{(0)}_1
@@ -68,7 +68,7 @@ z^{(2)}_1 = {
 ### $L = 1$
 <!-- formula for a^{(1)}_0 -->
 ```math
-a^{(1)}_0 = f(z^{(1)}_0)
+a^{(1)}_0 = f_1(z^{(1)}_0)
 ```
 
 <!-- formula for z^{(1)}_0 -->
@@ -82,7 +82,7 @@ z^{(1)}_0 = {
 
 <!-- formula for a^{(3)}_1 -->
 ```math
-a^{(1)}_1 = f(z^{(1)}_1)
+a^{(1)}_1 = f_1(z^{(1)}_1)
 ```
 
 <!-- formula for z^{(3)}_1 -->
@@ -161,7 +161,7 @@ C = MSE = {
   \frac{\partial z^{(L)}_j}{\partial w^{(L)}_{jk}}
 } = {
   2(a^{(L)}_j - y_j)
-  f'(z^{(L)}_j)
+  f_L'(z^{(L)}_j)
   a^{(L - 1)}_k
 }
 ```
@@ -174,11 +174,11 @@ C = MSE = {
   \frac{\partial z^{(L)}_j}{\partial b^{(L)}_j}
 } = {
   2(a^{(L)}_j - y_j)
-  f'(z^{(L)}_j)
+  f_L'(z^{(L)}_j)
   1
 } = {
   2(a^{(L)}_j - y_j)
-  f'(z^{(L)}_j)
+  f_L'(z^{(L)}_j)
 }
 ```
 
@@ -192,7 +192,7 @@ C = MSE = {
 } = {
   \sum_{j=0}^{n_L - 1}
   2(a^{(L)}_j - y_j)
-  f'(z^{(L)}_j)
+  f_L'(z^{(L)}_j)
   w^{(L)}_{jk}
 }
 ```
@@ -203,7 +203,7 @@ For any layer $l$ in the network:
 ```math
 \frac{\partial C}{\partial w^{(l)}_{jk}} = {
   \frac{\partial C}{\partial a^{(l)}_j}
-  f'(z^{(l)}_j)
+  f_l'(z^{(l)}_j)
   a^{(l - 1)}_k
 }
 ```
@@ -212,7 +212,7 @@ For any layer $l$ in the network:
 ```math
 \frac{\partial C}{\partial b^{(l)}_j} = {
   \frac{\partial C}{\partial a^{(l)}_j}
-  f'(z^{(l)}_j)
+  f_l'(z^{(l)}_j)
 }
 ```
 
