@@ -74,12 +74,17 @@ pub struct Network<'a> {
 
 impl<'a> Network<'a> {
     /// Creates a new network
-    ///  - input_cnt: count of input neurons
-    ///  - hidden layers: vector of usize; each usize represents the number of neurons in a layer
-    ///  - output_labels: vector of strings; each string represents a label for the output
+    ///  - training_data: vector of tuples: first element are inputs, second are the expected outputs,
+    ///  - hidden_layers: vector of usize; each usize represents the number of neurons in a layer,
+    ///  - out_labels: vector of strings; each string represents a label for the output,
+    ///  - activations: activation functions for each layer,
+    ///  - activations_derivatives: derivatives of activation functions for each layer,
+    ///  - cost_func_derivative: cost functions,
+    ///  - learning_rate: the integer to multiply the weights and biases,
+    ///  - batch_size: size of batches in gradient descent,
+    ///  - iteration_cnt: the number of iterations when training,
     pub fn new(
         training_data: Vec<(Vec<f32>, Vec<f32>)>,
-        inp_cnt: usize,
         hidden_layers: Vec<usize>,
         out_labels: Vec<&'a str>,
         activations: Vec<&'a dyn Fn(f32) -> f32>,
@@ -99,7 +104,7 @@ impl<'a> Network<'a> {
             .copied()
             .collect();
 
-        let input = vec![0.0; inp_cnt];
+        let input = vec![0.0; training_data[0].0.len()];
 
         let mut layers: Vec<Vec<f32>> = vec![];
         let mut activated_layers: Vec<Vec<f32>> = vec![];
@@ -236,10 +241,12 @@ impl<'a> Network<'a> {
             for l in 0..total_dws.len() {
                 for j in 0..total_dws[l].len() {
                     for k in 0..total_dws[l][j].len() {
-                        self.weights[l][j][k] -= total_dws[l][j][k] / (self.batch_size as f32);
+                        self.weights[l][j][k] -=
+                            total_dws[l][j][k] / (self.batch_size as f32) * self.learning_rate;
                     }
 
-                    self.biases[l][j] -= total_dbs[l][j] / (self.batch_size as f32);
+                    self.biases[l][j] -=
+                        total_dbs[l][j] / (self.batch_size as f32) * self.learning_rate;
                 }
             }
         }
