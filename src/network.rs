@@ -1,6 +1,9 @@
 use crate::utils::functions::cost::CostFunc;
 use crate::utils::math::dot_product;
+use chrono::offset::Local;
 use rand::Rng;
+use std::collections::HashMap;
+use std::iter::zip;
 
 /// L = number of layers (except the first (input) layer)
 /// l = current layer
@@ -253,9 +256,34 @@ impl<'a> Network<'a> {
     }
 
     pub fn train(&mut self) {
-        for _ in 0..self.iteration_cnt {
+        let time_start = Local::now();
+        println!("beginning training at {time_start}");
+
+        for i in 0..self.iteration_cnt {
+            let epoch = i + 1;
+            let time_epoch = Local::now();
+            println!("beginning epoch {epoch} of training at {time_epoch}");
             self.gradient_descent();
         }
+
+        let time_end = Local::now();
+        println!("finishing training at {time_end}");
+    }
+
+    pub fn get_output(&mut self, data: Vec<f32>) -> HashMap<&str, f32> {
+        self.input = data;
+
+        self.feedforward();
+
+        let mut map: HashMap<&str, f32> = HashMap::new();
+        for (label, val) in zip(
+            &self.out_labels,
+            &self.activated_layers[self.activated_layers.len() - 1],
+        ) {
+            map.insert(*label, *val);
+        }
+
+        map
     }
 }
 
@@ -271,7 +299,6 @@ mod tests {
     fn test_ws_cnt() {
         let net = Network::new(
             vec![], // no need for input batches
-            3,
             vec![2, 3],
             vec!["1", "2"],
             vec![&sigmoid, &sigmoid, &sigmoid],
@@ -298,7 +325,6 @@ mod tests {
     fn test_bias_cnt() {
         let net = Network::new(
             vec![], // no need for input batches
-            3,
             vec![2, 3],
             vec!["1", "2"],
             vec![&sigmoid, &sigmoid, &sigmoid],
@@ -323,7 +349,6 @@ mod tests {
     fn test_neurons_cnt() {
         let net = Network::new(
             vec![], // no need for input batches
-            3,
             vec![2, 3],
             vec!["1", "2"],
             vec![&sigmoid, &sigmoid, &sigmoid],
@@ -349,7 +374,6 @@ mod tests {
     fn test_feedforward_layer() {
         let mut net = Network::new(
             vec![], // no need for input batches
-            3,
             vec![],
             vec!["1", "2", "3"],
             vec![&sigmoid],

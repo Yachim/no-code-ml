@@ -45,17 +45,23 @@ pub fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, 
             layer_bs.push(db);
 
             let mut neuron_ws: Vec<f32> = vec![];
-            for k in 0..network.activated_layers[l - 1].len() {
-                let dw = da
-                    * network.activations_derivatives[l](network.layers[l][j])
-                    * network.activated_layers[l - 1][k];
+            let prev_layer = if l == 0 {
+                &network.input
+            } else {
+                &network.activated_layers[l - 1]
+            };
+
+            for k in 0..prev_layer.len() {
+                let dw =
+                    da * network.activations_derivatives[l](network.layers[l][j]) * prev_layer[k];
+
                 neuron_ws.push(dw);
             }
             layer_ws.push(neuron_ws);
         }
 
-        dws.push(layer_ws);
-        dbs.push(layer_bs);
+        dws.insert(0, layer_ws);
+        dbs.insert(0, layer_bs);
 
         das = new_das;
     }
