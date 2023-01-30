@@ -1,7 +1,7 @@
 use crate::utils::functions::cost::CostFunc;
 use crate::utils::math::dot_product;
 use chrono::offset::Local;
-use rand::Rng;
+use rand::{seq::SliceRandom, Rng};
 use std::collections::HashMap;
 use std::iter::zip;
 
@@ -256,6 +256,8 @@ impl<'a> Network<'a> {
     }
 
     pub fn train(&mut self) {
+        let mut rng = rand::thread_rng();
+
         let time_start = Local::now();
         println!("beginning training at {time_start}");
 
@@ -263,6 +265,8 @@ impl<'a> Network<'a> {
             let epoch = i + 1;
             let time_epoch = Local::now();
             println!("beginning epoch {epoch} of training at {time_epoch}");
+
+            self.training_data.shuffle(&mut rng);
             self.gradient_descent();
         }
 
