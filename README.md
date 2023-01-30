@@ -233,7 +233,7 @@ Where:
 \frac{\partial C}{\partial a^{(l)}_j} = {
   \sum_{i=0}^{n_{l + 1} - 1}
   \frac{\partial C}{\partial a^{(l + 1)}_i}
-  f'(z^{(l + 1)}_i)
+  f_{l + 1}'(z^{(l + 1)}_i)
   w^{(l + 1)}_{ij}
 } \qquad
 \textrm{otherwise}
