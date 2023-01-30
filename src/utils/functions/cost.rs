@@ -1,33 +1,64 @@
 use crate::network::Network;
 
-pub type CostFunc<'a> = &'a dyn Fn(Network, Vec<f32>) -> (Vec<f32>, f32);
+pub type CostFunc<'a> = &'a dyn Fn(&Network, Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<Vec<f32>>);
 
 /// Derivative of the Mean Squared Error - (a - y)^2;
 ///  - network: the Network instance to apply on
 ///  - expected: expected output values; same length as last layer of network
-pub fn mse_deriv(network: Network, expected: Vec<f32>) -> (Vec<f32>, f32) {
+///
+/// returns a change in weights and change in biases
+pub fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<Vec<f32>>) {
     assert_eq!(
-        network.layers[network.layers.len() - 1].len(),
+        network.activated_layers[network.activated_layers.len() - 1].len(),
         expected.len()
     );
 
-    // partial derivative
-    // dC/dw = dz/dw × da/dz × dC/da
-    // dC/db = dz/db × da/dz × dC/da
-    // dC/da_ = dz/da_ × da/dz × dC/da
-    //
-    // C...cost function
-    // w...weight
-    // b...bias
-    // z...value of neuron before going through activation function (z = a_ × w + b)
-    // a...activation function
-    // a_...activation of the previous layer
-    // y...expected value
-    //
-    // root (local gradient) = da/d0 × dC/da = a'(O) × 2 × (a - y)
-    // dz/db = 1
-    // dz/dw = a_
-    // dz/da_ =
+    // derivatives of cost function with respect to activations from the next layer
+    let mut das: Vec<f32> = vec![];
 
-    (vec![], 0.0) // for testable code
+    let mut dws: Vec<Vec<Vec<f32>>> = vec![];
+    let mut dbs: Vec<Vec<f32>> = vec![];
+
+    for l in (0..network.activated_layers.len()).rev() {
+        let mut new_das: Vec<f32> = vec![];
+
+        let mut layer_ws: Vec<Vec<f32>> = vec![];
+        let mut layer_bs: Vec<f32> = vec![];
+
+        for j in 0..network.activated_layers[l].len() {
+            let is_last_layer = l == network.activated_layers.len() - 1;
+
+            let da = if is_last_layer {
+                2.0 * (network.activated_layers[l][j] - expected[j])
+            } else {
+                (0..network.activated_layers[l + 1].len())
+                    .map(|i| {
+                        das[i]
+                            * network.activations_derivatives[l + 1](network.layers[l + 1][i])
+                            * network.weights[l + 1][i][j]
+                    })
+                    .sum()
+            };
+            new_das.push(da);
+
+            let db = da * network.activations_derivatives[l](network.layers[l][j]);
+            layer_bs.push(-db);
+
+            let mut neuron_ws: Vec<f32> = vec![];
+            for k in 0..network.activated_layers[l - 1].len() {
+                let dw = da
+                    * network.activations_derivatives[l](network.layers[l][j])
+                    * network.activated_layers[l - 1][k];
+                neuron_ws.push(-dw);
+            }
+            layer_ws.push(neuron_ws);
+        }
+
+        dws.push(layer_ws);
+        dbs.push(layer_bs);
+
+        das = new_das;
+    }
+
+    return (dws, dbs);
 }
