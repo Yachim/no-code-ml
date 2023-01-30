@@ -9,8 +9,9 @@ use rand::Rng;
 /// M = number of neurons in the (l - 1)th layer
 /// m = current neuron from the layer M
 pub struct Network<'a> {
-    /// input batches
-    input_batches: Vec<Vec<f32>>,
+    /// training data
+    /// vector of tuples - first element are inputs, second are the expected outputs
+    training_data: Vec<(Vec<f32>, Vec<f32>)>,
 
     /// the input fields
     pub input: Vec<f32>,
@@ -66,6 +67,9 @@ pub struct Network<'a> {
     learning_rate: f32,
 
     batch_size: usize,
+
+    /// number of iterations when training
+    iteration_cnt: usize,
 }
 
 impl<'a> Network<'a> {
@@ -74,7 +78,7 @@ impl<'a> Network<'a> {
     ///  - hidden layers: vector of usize; each usize represents the number of neurons in a layer
     ///  - output_labels: vector of strings; each string represents a label for the output
     pub fn new(
-        input_batches: Vec<Vec<f32>>,
+        training_data: Vec<(Vec<f32>, Vec<f32>)>,
         inp_cnt: usize,
         hidden_layers: Vec<usize>,
         out_labels: Vec<&'a str>,
@@ -83,6 +87,7 @@ impl<'a> Network<'a> {
         cost_func_derivative: CostFunc<'a>,
         learning_rate: f32,
         batch_size: usize,
+        iteration_cnt: usize,
     ) -> Self {
         assert_eq!(activations_derivatives.len(), activations.len());
         assert_eq!(activations.len(), hidden_layers.len() + 1);
@@ -105,7 +110,7 @@ impl<'a> Network<'a> {
         }
 
         let mut s = Self {
-            input_batches,
+            training_data,
             input,
             layers,
             activated_layers,
@@ -117,6 +122,7 @@ impl<'a> Network<'a> {
             out_labels,
             learning_rate,
             batch_size,
+            iteration_cnt,
         };
 
         s.initialize_params();
@@ -183,17 +189,65 @@ impl<'a> Network<'a> {
         }
     }
 
-    fn stochastic_gradient_descent(&mut self) {
-        for batch_start_index in (0..self.input_batches.len()).step_by(self.batch_size) {
-            // TODO
-
-            let batch = self.input_batches[batch_start_index..batch_start_index + self.batch_size]
+    fn gradient_descent(&mut self) {
+        for batch_start_index in (0..self.training_data.len()).step_by(self.batch_size) {
+            let batch = self.training_data[batch_start_index..batch_start_index + self.batch_size]
                 .to_owned();
-            for input in batch.iter() {
-                self.input = input.to_vec();
+
+            let mut total_dws: Vec<Vec<Vec<f32>>> = vec![];
+            let mut total_dbs: Vec<Vec<f32>> = vec![];
+
+            for l in 0..self.weights.len() {
+                let mut layer_dws: Vec<Vec<f32>> = vec![];
+                let mut layer_dbs: Vec<f32> = vec![];
+
+                for j in 0..self.weights[l].len() {
+                    let mut neuron_dws: Vec<f32> = vec![];
+
+                    for _ in 0..self.weights[l][j].len() {
+                        neuron_dws.push(0.0);
+                    }
+
+                    layer_dws.push(neuron_dws);
+                    layer_dbs.push(0.0);
+                }
+
+                total_dws.push(layer_dws);
+                total_dbs.push(layer_dbs);
+            }
+
+            for (inputs, expected) in batch.iter() {
+                self.input = inputs.to_vec();
 
                 self.feedforward();
+
+                let (dws, dbs) = (self.cost_func_derivative)(&self, expected.to_vec());
+
+                for l in 0..dws.len() {
+                    for j in 0..dws[l].len() {
+                        for k in 0..dws[l][j].len() {
+                            total_dws[l][j][k] += dws[l][j][k];
+                            total_dbs[l][j] += dbs[l][j];
+                        }
+                    }
+                }
             }
+
+            for l in 0..total_dws.len() {
+                for j in 0..total_dws[l].len() {
+                    for k in 0..total_dws[l][j].len() {
+                        self.weights[l][j][k] -= total_dws[l][j][k] / (self.batch_size as f32);
+                    }
+
+                    self.biases[l][j] -= total_dbs[l][j] / (self.batch_size as f32);
+                }
+            }
+        }
+    }
+
+    pub fn train(&mut self) {
+        for _ in 0..self.iteration_cnt {
+            self.gradient_descent();
         }
     }
 }
@@ -218,6 +272,7 @@ mod tests {
             &mse_deriv,
             0.5,
             0, // no need for batch_size
+            1,
         );
 
         let mut total_ws = 0;
@@ -244,6 +299,7 @@ mod tests {
             &mse_deriv,
             0.5,
             0, // no need for batch_size
+            1,
         );
 
         let mut total_biases = 0;
@@ -268,6 +324,7 @@ mod tests {
             &mse_deriv,
             0.5,
             0, // no need for batch_size
+            1,
         );
 
         let mut total_neurons = 0;
@@ -293,6 +350,7 @@ mod tests {
             &mse_deriv,
             0.5,
             0, // no need for batch_size
+            1,
         );
 
         net.input = vec![3.0, 2.0];
