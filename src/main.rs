@@ -7,7 +7,6 @@ use std::iter::zip;
 use utils::functions::{activation::*, cost::mse_deriv};
 
 fn main() -> Result<(), Error> {
-    let cwd = std::env::current_dir()?;
     // https://www.kaggle.com/competitions/digit-recognizer/data
     let mut train_rdr = csv::Reader::from_path("src/example_data/digits/train.csv")?;
 
@@ -18,12 +17,12 @@ fn main() -> Result<(), Error> {
         let record = result?;
 
         let mut expected_for_sample = vec![0.0; 10];
-        expected_for_sample[(&record[0]).parse::<usize>().unwrap()] = 1.0;
+        expected_for_sample[record[0].parse::<usize>().unwrap()] = 1.0;
         expected.push(expected_for_sample);
 
-        let mut inputs_for_sample = vec![0.0; (&record).len() - 1];
-        for pixel_i in 1..(&record).len() - 1 {
-            inputs_for_sample[pixel_i] = (&record[pixel_i]).parse::<f32>().unwrap();
+        let mut inputs_for_sample = vec![0.0; record.len() - 1];
+        for pixel_i in 1..record.len() - 1 {
+            inputs_for_sample[pixel_i] = record[pixel_i].parse::<f32>().unwrap();
         }
         inputs.push(inputs_for_sample);
     }
@@ -35,8 +34,8 @@ fn main() -> Result<(), Error> {
         vec![&relu, &relu, &sigmoid],
         vec![&relu_deriv, &relu_deriv, &sigmoid_deriv],
         &mse_deriv,
-        0.1,
-        10,
+        0.3,
+        2,
         2,
     );
 
@@ -50,9 +49,9 @@ fn main() -> Result<(), Error> {
     for (i, result) in test_rdr.records().enumerate() {
         let record = result?;
 
-        let mut test_input = vec![0.0; (&record).len()];
-        for pixel_i in 1..(&record).len() - 1 {
-            test_input[pixel_i] = (&record[pixel_i]).parse::<f32>().unwrap();
+        let mut test_input = vec![0.0; record.len()];
+        for pixel_i in 1..record.len() - 1 {
+            test_input[pixel_i] = record[pixel_i].parse::<f32>().unwrap();
         }
 
         let res = net.get_output(test_input);

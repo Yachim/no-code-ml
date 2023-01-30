@@ -154,11 +154,10 @@ impl<'a> Network<'a> {
 
                 let mut neuron_weights: Vec<f32> = vec![];
                 // count of neurons in prevous layer
-                let neuron_cnt: usize;
-                if i == 0 {
-                    neuron_cnt = self.input.len();
+                let neuron_cnt = if i == 0 {
+                    self.input.len()
                 } else {
-                    neuron_cnt = self.layers[i - 1].len();
+                    self.layers[i - 1].len()
                 };
 
                 for _ in 0..neuron_cnt {
@@ -207,17 +206,12 @@ impl<'a> Network<'a> {
 
             for l in 0..self.weights.len() {
                 let mut layer_dws: Vec<Vec<f32>> = vec![];
-                let mut layer_dbs: Vec<f32> = vec![];
+                let layer_dbs: Vec<f32> = vec![0.0; self.weights[l].len()];
 
                 for j in 0..self.weights[l].len() {
-                    let mut neuron_dws: Vec<f32> = vec![];
-
-                    for _ in 0..self.weights[l][j].len() {
-                        neuron_dws.push(0.0);
-                    }
+                    let neuron_dws = vec![0.0; self.weights[l][j].len()];
 
                     layer_dws.push(neuron_dws);
-                    layer_dbs.push(0.0);
                 }
 
                 total_dws.push(layer_dws);
@@ -229,7 +223,7 @@ impl<'a> Network<'a> {
 
                 self.feedforward();
 
-                let (dws, dbs) = (self.cost_func_derivative)(&self, expected.to_vec());
+                let (dws, dbs) = (self.cost_func_derivative)(self, expected.to_vec());
 
                 for l in 0..dws.len() {
                     for j in 0..dws[l].len() {
