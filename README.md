@@ -15,7 +15,7 @@ Suppose we have this sample network:
 a^{(l)}_j = f_l(z^{(l)}_j)
 ```
 
-Where $f$ is the activation function, e.g., sigmoid:
+Where $f_l$ is the activation function for layer $l$, e.g., sigmoid:
 
 <!-- example of activation with the sigmoid activation function -->
 ```math
