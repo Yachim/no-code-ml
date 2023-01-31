@@ -99,6 +99,7 @@ impl<'a> Network<'a> {
     ) -> Self {
         assert_eq!(activations_derivatives.len(), activations.len());
         assert_eq!(activations.len(), hidden_layers.len() + 1);
+
         // all layers except the input (hidden + output)
         // contains neurons count
         let ls: Vec<usize> = hidden_layers
@@ -219,9 +220,9 @@ impl<'a> Network<'a> {
             }
 
             for (inputs, expected) in batch.iter() {
-                self.input = inputs.to_vec();
+                assert_eq!(inputs.len(), self.input.len());
 
-                self.feedforward();
+                self.predict(inputs.to_vec());
 
                 let (dws, dbs) = (self.cost_func_derivative)(self, expected.to_vec());
 
@@ -268,11 +269,15 @@ impl<'a> Network<'a> {
         println!("finishing training at {time_end}");
     }
 
-    pub fn get_output(&mut self, data: Vec<f32>) -> HashMap<&str, f32> {
+    /// predicts the output from the given data
+    pub fn predict(&mut self, data: Vec<f32>) {
         self.input = data;
 
         self.feedforward();
+    }
 
+    /// returns a hasmap with keys from out_labels and their corresponding values
+    pub fn get_output(&self) -> HashMap<&str, f32> {
         let mut map: HashMap<&str, f32> = HashMap::new();
         for (label, val) in zip(
             &self.out_labels,
@@ -282,6 +287,15 @@ impl<'a> Network<'a> {
         }
 
         map
+    }
+
+    /// returns a key and corresponding value with the highest value in the output
+    pub fn get_best_output(&self) -> (&str, f32) {
+        let val = zip(&self.layers[self.layers.len() - 1], &self.out_labels)
+            .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+            .unwrap();
+
+        (*val.1, *val.0)
     }
 }
 
@@ -296,7 +310,7 @@ mod tests {
     #[test]
     fn test_ws_cnt() {
         let net = Network::new(
-            vec![], // no need for input batches
+            vec![(vec![1.0, 3.0, 3.0], vec![1.0, 2.0])],
             vec![2, 3],
             vec!["1", "2"],
             vec![&sigmoid, &sigmoid, &sigmoid],
@@ -322,7 +336,7 @@ mod tests {
     #[test]
     fn test_bias_cnt() {
         let net = Network::new(
-            vec![], // no need for input batches
+            vec![(vec![1.0, 3.0, 3.0], vec![1.0, 2.0])],
             vec![2, 3],
             vec!["1", "2"],
             vec![&sigmoid, &sigmoid, &sigmoid],
@@ -346,7 +360,7 @@ mod tests {
     #[test]
     fn test_neurons_cnt() {
         let net = Network::new(
-            vec![], // no need for input batches
+            vec![(vec![1.0, 3.0, 3.0], vec![1.0, 2.0])],
             vec![2, 3],
             vec!["1", "2"],
             vec![&sigmoid, &sigmoid, &sigmoid],
@@ -371,7 +385,7 @@ mod tests {
     #[test]
     fn test_feedforward_layer() {
         let mut net = Network::new(
-            vec![], // no need for input batches
+            vec![(vec![1.0, 3.0, 3.0], vec![1.0, 2.0])],
             vec![],
             vec!["1", "2", "3"],
             vec![&sigmoid],
@@ -393,5 +407,25 @@ mod tests {
         assert_eq!(net.layers[0][0], 18.0);
         assert_eq!(net.layers[0][1], 15.0);
         assert_eq!(net.layers[0][2], 22.0);
+    }
+
+    #[test]
+    fn test_best_output() {
+        let mut net = Network::new(
+            vec![(vec![1.0, 3.0, 3.0], vec![1.0, 2.0])],
+            vec![],
+            vec!["1", "2", "3"],
+            vec![&sigmoid],
+            vec![&sigmoid_deriv],
+            &mse_deriv,
+            0.5,
+            0, // no need for batch_size
+            1,
+        );
+
+        net.activated_layers[0] = vec![3.0, 2.0, 1.0];
+        println!("{:?} {:?}", &net.activated_layers, &net.out_labels);
+        let out = net.get_best_output();
+        assert_eq!(out.0, "1");
     }
 }

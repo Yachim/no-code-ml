@@ -54,12 +54,8 @@ fn main() -> Result<(), Error> {
             test_input[pixel_i] = record[pixel_i].parse::<f32>().unwrap();
         }
 
-        let res = net.get_output(test_input);
-        let val = res
-            .iter()
-            .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
-            .unwrap()
-            .0;
+        net.predict(test_input);
+        let val = net.get_best_output().0;
 
         test_wtr.write_record(&[(i + 1).to_string(), val.to_string()])?;
     }
