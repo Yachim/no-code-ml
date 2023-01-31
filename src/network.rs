@@ -185,9 +185,9 @@ impl<'a> Network<'a> {
         };
 
         for i in 0..self.layers[index].len() {
-            self.layers[index][i] =
-                dot_product(&prev_layer, &self.weights[index][i]) + self.biases[index][i];
-            self.activated_layers[index][i] = (self.activations[index])(self.layers[index][i]);
+            let z = dot_product(&prev_layer, &self.weights[index][i]) + self.biases[index][i];
+            self.layers[index][i] = z;
+            self.activated_layers[index][i] = (self.activations[index])(z);
         }
     }
 
@@ -427,7 +427,6 @@ mod tests {
         );
 
         net.activated_layers[0] = vec![3.0, 2.0, 1.0];
-        println!("{:?} {:?}", &net.activated_layers, &net.out_labels);
         let out = net.get_best_output();
         assert_eq!(out.1, 3.0);
         assert_eq!(out.0, "1");

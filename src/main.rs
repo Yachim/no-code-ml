@@ -34,9 +34,9 @@ fn main() -> Result<(), Error> {
         vec![&relu, &relu, &sigmoid],
         vec![&relu_deriv, &relu_deriv, &sigmoid_deriv],
         &mse_deriv,
-        0.3,
-        2,
-        100,
+        0.001,
+        10,
+        300,
     );
 
     net.train();
@@ -59,6 +59,7 @@ fn main() -> Result<(), Error> {
 
         test_wtr.write_record(&[(i + 1).to_string(), val.to_string()])?;
     }
+
     test_wtr.flush()?;
 
     Ok(())
