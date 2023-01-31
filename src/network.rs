@@ -291,11 +291,14 @@ impl<'a> Network<'a> {
 
     /// returns a key and corresponding value with the highest value in the output
     pub fn get_best_output(&self) -> (&str, f32) {
-        let val = zip(&self.layers[self.layers.len() - 1], &self.out_labels)
-            .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
-            .unwrap();
+        let val = zip(
+            &self.out_labels,
+            &self.activated_layers[self.activated_layers.len() - 1],
+        )
+        .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+        .unwrap();
 
-        (*val.1, *val.0)
+        (*val.0, *val.1)
     }
 }
 
@@ -426,6 +429,7 @@ mod tests {
         net.activated_layers[0] = vec![3.0, 2.0, 1.0];
         println!("{:?} {:?}", &net.activated_layers, &net.out_labels);
         let out = net.get_best_output();
+        assert_eq!(out.1, 3.0);
         assert_eq!(out.0, "1");
     }
 }

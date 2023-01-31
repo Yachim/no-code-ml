@@ -36,7 +36,7 @@ fn main() -> Result<(), Error> {
         &mse_deriv,
         0.3,
         2,
-        2,
+        100,
     );
 
     net.train();
