@@ -249,7 +249,7 @@ impl<'a> Network<'a> {
         for i in 0..iteration_cnt {
             let epoch = i + 1;
             let time_epoch = Local::now();
-            println!("beginning epoch {epoch} of training at {time_epoch}");
+            println!("beginning training epoch {epoch} out of {iteration_cnt} at {time_epoch}");
 
             training_data_mut.shuffle(&mut rng);
             self.gradient_descent(&training_data_mut, learning_rate, batch_size);
