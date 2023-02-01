@@ -290,6 +290,14 @@ impl<'a> Network<'a> {
 
         (*val.0, *val.1)
     }
+
+    pub fn debug(&self) {
+        println!("inputs: {:?}", self.input);
+        println!("layers: {:?}", self.layers);
+        println!("activations: {:?}", self.activated_layers);
+        println!("weights: {:?}", self.weights);
+        println!("biases: {:?}", self.biases);
+    }
 }
 
 #[cfg(test)]
