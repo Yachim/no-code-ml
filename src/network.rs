@@ -12,10 +12,6 @@ use std::iter::zip;
 /// M = number of neurons in the (l - 1)th layer
 /// m = current neuron from the layer M
 pub struct Network<'a> {
-    /// training data
-    /// vector of tuples - first element are inputs, second are the expected outputs
-    training_data: Vec<(Vec<f32>, Vec<f32>)>,
-
     /// the input fields
     pub input: Vec<f32>,
 
@@ -65,37 +61,23 @@ pub struct Network<'a> {
 
     /// derivative of the cost function
     cost_func_derivative: CostFunc<'a>,
-
-    /// learning rate of the network
-    learning_rate: f32,
-
-    batch_size: usize,
-
-    /// number of iterations when training
-    iteration_cnt: usize,
 }
 
 impl<'a> Network<'a> {
     /// Creates a new network
-    ///  - training_data: vector of tuples: first element are inputs, second are the expected outputs,
+    ///  - training_cnt: number of neurons in the input layer
     ///  - hidden_layers: vector of usize; each usize represents the number of neurons in a layer,
     ///  - out_labels: vector of strings; each string represents a label for the output,
     ///  - activations: activation functions for each layer,
     ///  - activations_derivatives: derivatives of activation functions for each layer,
     ///  - cost_func_derivative: cost functions,
-    ///  - learning_rate: the integer to multiply the weights and biases,
-    ///  - batch_size: size of batches in gradient descent,
-    ///  - iteration_cnt: the number of iterations when training,
     pub fn new(
-        training_data: Vec<(Vec<f32>, Vec<f32>)>,
+        training_cnt: usize,
         hidden_layers: Vec<usize>,
         out_labels: Vec<&'a str>,
         activations: Vec<&'a dyn Fn(f32) -> f32>,
         activations_derivatives: Vec<&'a dyn Fn(f32) -> f32>,
         cost_func_derivative: CostFunc<'a>,
-        learning_rate: f32,
-        batch_size: usize,
-        iteration_cnt: usize,
     ) -> Self {
         assert_eq!(activations_derivatives.len(), activations.len());
         assert_eq!(activations.len(), hidden_layers.len() + 1);
@@ -108,7 +90,7 @@ impl<'a> Network<'a> {
             .copied()
             .collect();
 
-        let input = vec![0.0; training_data[0].0.len()];
+        let input = vec![0.0; training_cnt];
 
         let mut layers: Vec<Vec<f32>> = vec![];
         let mut activated_layers: Vec<Vec<f32>> = vec![];
@@ -119,7 +101,6 @@ impl<'a> Network<'a> {
         }
 
         let mut s = Self {
-            training_data,
             input,
             layers,
             activated_layers,
@@ -129,9 +110,6 @@ impl<'a> Network<'a> {
             activations_derivatives,
             cost_func_derivative,
             out_labels,
-            learning_rate,
-            batch_size,
-            iteration_cnt,
         };
 
         s.initialize_params();
@@ -198,10 +176,14 @@ impl<'a> Network<'a> {
         }
     }
 
-    fn gradient_descent(&mut self) {
-        for batch_start_index in (0..self.training_data.len()).step_by(self.batch_size) {
-            let batch = self.training_data[batch_start_index..batch_start_index + self.batch_size]
-                .to_owned();
+    fn gradient_descent(
+        &mut self,
+        training_data: &Vec<(Vec<f32>, Vec<f32>)>,
+        learning_rate: f32,
+        batch_size: usize,
+    ) {
+        for batch_start_index in (0..training_data.len()).step_by(batch_size) {
+            let batch = training_data[batch_start_index..batch_start_index + batch_size].to_owned();
 
             let mut total_dws: Vec<Vec<Vec<f32>>> = vec![];
             let mut total_dbs: Vec<Vec<f32>> = vec![];
@@ -241,29 +223,36 @@ impl<'a> Network<'a> {
                 for j in 0..total_dws[l].len() {
                     for k in 0..total_dws[l][j].len() {
                         self.weights[l][j][k] -=
-                            total_dws[l][j][k] / (self.batch_size as f32) * self.learning_rate;
+                            total_dws[l][j][k] / (batch_size as f32) * learning_rate;
                     }
 
-                    self.biases[l][j] -=
-                        total_dbs[l][j] / (self.batch_size as f32) * self.learning_rate;
+                    self.biases[l][j] -= total_dbs[l][j] / (batch_size as f32) * learning_rate;
                 }
             }
         }
     }
 
-    pub fn train(&mut self) {
+    pub fn train(
+        &mut self,
+        training_data: Vec<(Vec<f32>, Vec<f32>)>,
+        iteration_cnt: usize,
+        learning_rate: f32,
+        batch_size: usize,
+    ) {
         let mut rng = rand::thread_rng();
 
         let time_start = Local::now();
         println!("beginning training at {time_start}");
 
-        for i in 0..self.iteration_cnt {
+        let mut training_data_mut = training_data;
+
+        for i in 0..iteration_cnt {
             let epoch = i + 1;
             let time_epoch = Local::now();
             println!("beginning epoch {epoch} of training at {time_epoch}");
 
-            self.training_data.shuffle(&mut rng);
-            self.gradient_descent();
+            training_data_mut.shuffle(&mut rng);
+            self.gradient_descent(&training_data_mut, learning_rate, batch_size);
         }
 
         let time_end = Local::now();
@@ -315,15 +304,12 @@ mod tests {
     #[test]
     fn test_ws_cnt() {
         let net = Network::new(
-            vec![(vec![1.0, 3.0, 3.0], vec![1.0, 2.0])],
+            3,
             vec![2, 3],
             vec!["1", "2"],
             vec![&sigmoid, &sigmoid, &sigmoid],
             vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
             &mse_deriv,
-            0.5,
-            0, // no need for batch_size
-            1,
         );
 
         let mut total_ws = 0;
@@ -341,15 +327,12 @@ mod tests {
     #[test]
     fn test_bias_cnt() {
         let net = Network::new(
-            vec![(vec![1.0, 3.0, 3.0], vec![1.0, 2.0])],
+            3,
             vec![2, 3],
             vec!["1", "2"],
             vec![&sigmoid, &sigmoid, &sigmoid],
             vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
             &mse_deriv,
-            0.5,
-            0, // no need for batch_size
-            1,
         );
 
         let mut total_biases = 0;
@@ -365,15 +348,12 @@ mod tests {
     #[test]
     fn test_neurons_cnt() {
         let net = Network::new(
-            vec![(vec![1.0, 3.0, 3.0], vec![1.0, 2.0])],
+            3,
             vec![2, 3],
             vec!["1", "2"],
             vec![&sigmoid, &sigmoid, &sigmoid],
             vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
             &mse_deriv,
-            0.5,
-            0, // no need for batch_size
-            1,
         );
 
         let mut total_neurons = 0;
@@ -390,15 +370,12 @@ mod tests {
     #[test]
     fn test_feedforward_layer() {
         let mut net = Network::new(
-            vec![(vec![1.0, 3.0, 3.0], vec![1.0, 2.0])],
+            3,
             vec![],
             vec!["1", "2", "3"],
             vec![&sigmoid],
             vec![&sigmoid_deriv],
             &mse_deriv,
-            0.5,
-            0, // no need for batch_size
-            1,
         );
 
         net.input = vec![3.0, 2.0];
@@ -417,15 +394,12 @@ mod tests {
     #[test]
     fn test_best_output() {
         let mut net = Network::new(
-            vec![(vec![1.0, 3.0, 3.0], vec![1.0, 2.0])],
+            3,
             vec![],
             vec!["1", "2", "3"],
             vec![&sigmoid],
             vec![&sigmoid_deriv],
             &mse_deriv,
-            0.5,
-            0, // no need for batch_size
-            1,
         );
 
         net.activated_layers[0] = vec![3.0, 2.0, 1.0];
@@ -437,15 +411,12 @@ mod tests {
     #[test]
     fn test_outputs() {
         let mut net = Network::new(
-            vec![(vec![1.0, 3.0, 3.0], vec![1.0, 2.0])],
+            3,
             vec![],
             vec!["1", "2", "3"],
             vec![&sigmoid],
             vec![&sigmoid_deriv],
             &mse_deriv,
-            0.5,
-            0, // no need for batch_size
-            1,
         );
 
         net.activated_layers[0] = vec![3.0, 2.0, 1.0];
