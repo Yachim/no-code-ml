@@ -310,6 +310,7 @@ mod tests {
         activation::{sigmoid, sigmoid_deriv},
         cost::mse_deriv,
     };
+    use std::collections::HashMap;
 
     #[test]
     fn test_ws_cnt() {
@@ -431,5 +432,29 @@ mod tests {
         let out = net.get_best_output();
         assert_eq!(out.1, 3.0);
         assert_eq!(out.0, "1");
+    }
+
+    #[test]
+    fn test_outputs() {
+        let mut net = Network::new(
+            vec![(vec![1.0, 3.0, 3.0], vec![1.0, 2.0])],
+            vec![],
+            vec!["1", "2", "3"],
+            vec![&sigmoid],
+            vec![&sigmoid_deriv],
+            &mse_deriv,
+            0.5,
+            0, // no need for batch_size
+            1,
+        );
+
+        net.activated_layers[0] = vec![3.0, 2.0, 1.0];
+
+        let out = net.get_output();
+        let expected_map: HashMap<&str, f32> = HashMap::from([("1", 3.0), ("2", 2.0), ("3", 1.0)]);
+
+        assert_eq!(out.len(), expected_map.len());
+        assert!(out.keys().all(|key| expected_map.contains_key(key)
+            && f32::abs(out.get(key).unwrap() - expected_map.get(key).unwrap()) < f32::EPSILON));
     }
 }
