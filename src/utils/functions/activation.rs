@@ -8,7 +8,8 @@ pub fn sigmoid(n: f32) -> f32 {
 
 /// Derivative of the sigmoid activation function
 pub fn sigmoid_deriv(n: f32) -> f32 {
-    sigmoid(n) * (1.0 - sigmoid(n))
+    let sig_n = sigmoid(n);
+    sig_n * (1.0 - sig_n)
 }
 
 /// ReLU activation function
