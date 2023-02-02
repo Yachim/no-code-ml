@@ -179,7 +179,58 @@ impl<'a> Network<'a> {
         }
     }
 
-    fn gradient_descent(
+    /// does gradient descent over a mini batch
+    fn gradient_descent(&mut self, batch: &Vec<(Vec<f32>, Vec<f32>)>, learning_rate: f32) {
+        let batch_size = batch.len();
+
+        let mut total_dws: Vec<Vec<Vec<f32>>> = vec![];
+        let mut total_dbs: Vec<Vec<f32>> = vec![];
+
+        for l in 0..self.weights.len() {
+            let mut layer_dws: Vec<Vec<f32>> = vec![];
+            let layer_dbs: Vec<f32> = vec![0.0; self.weights[l].len()];
+
+            for j in 0..self.weights[l].len() {
+                let neuron_dws = vec![0.0; self.weights[l][j].len()];
+
+                layer_dws.push(neuron_dws);
+            }
+
+            total_dws.push(layer_dws);
+            total_dbs.push(layer_dbs);
+        }
+
+        for (input, expected) in batch.iter() {
+            assert_eq!(input.len(), self.input.len());
+
+            self.predict(input.to_vec());
+
+            let (dws, dbs) = (self.cost_func_derivative)(self, expected.to_vec());
+
+            for l in 0..dws.len() {
+                for j in 0..dws[l].len() {
+                    for k in 0..dws[l][j].len() {
+                        total_dws[l][j][k] += dws[l][j][k];
+                        total_dbs[l][j] += dbs[l][j];
+                    }
+                }
+            }
+        }
+
+        for l in 0..total_dws.len() {
+            for j in 0..total_dws[l].len() {
+                for k in 0..total_dws[l][j].len() {
+                    self.weights[l][j][k] -=
+                        total_dws[l][j][k] / (batch_size as f32) * learning_rate;
+                }
+
+                self.biases[l][j] -= total_dbs[l][j] / (batch_size as f32) * learning_rate;
+            }
+        }
+    }
+
+    /// splits training data into mini batches
+    fn batch_gradient_descent(
         &mut self,
         training_data: &Vec<(Vec<f32>, Vec<f32>)>,
         learning_rate: f32,
@@ -187,51 +238,7 @@ impl<'a> Network<'a> {
     ) {
         for batch_start_index in (0..training_data.len()).step_by(batch_size) {
             let batch = training_data[batch_start_index..batch_start_index + batch_size].to_owned();
-
-            let mut total_dws: Vec<Vec<Vec<f32>>> = vec![];
-            let mut total_dbs: Vec<Vec<f32>> = vec![];
-
-            for l in 0..self.weights.len() {
-                let mut layer_dws: Vec<Vec<f32>> = vec![];
-                let layer_dbs: Vec<f32> = vec![0.0; self.weights[l].len()];
-
-                for j in 0..self.weights[l].len() {
-                    let neuron_dws = vec![0.0; self.weights[l][j].len()];
-
-                    layer_dws.push(neuron_dws);
-                }
-
-                total_dws.push(layer_dws);
-                total_dbs.push(layer_dbs);
-            }
-
-            for (input, expected) in batch.iter() {
-                assert_eq!(input.len(), self.input.len());
-
-                self.predict(input.to_vec());
-
-                let (dws, dbs) = (self.cost_func_derivative)(self, expected.to_vec());
-
-                for l in 0..dws.len() {
-                    for j in 0..dws[l].len() {
-                        for k in 0..dws[l][j].len() {
-                            total_dws[l][j][k] += dws[l][j][k];
-                            total_dbs[l][j] += dbs[l][j];
-                        }
-                    }
-                }
-            }
-
-            for l in 0..total_dws.len() {
-                for j in 0..total_dws[l].len() {
-                    for k in 0..total_dws[l][j].len() {
-                        self.weights[l][j][k] -=
-                            total_dws[l][j][k] / (batch_size as f32) * learning_rate;
-                    }
-
-                    self.biases[l][j] -= total_dbs[l][j] / (batch_size as f32) * learning_rate;
-                }
-            }
+            self.gradient_descent(&batch, learning_rate);
         }
     }
 
@@ -241,6 +248,7 @@ impl<'a> Network<'a> {
         iteration_cnt: usize,
         learning_rate: f32,
         batch_size: usize,
+        log_epochs: bool,
     ) {
         let mut rng = rand::thread_rng();
 
@@ -252,10 +260,13 @@ impl<'a> Network<'a> {
         for i in 0..iteration_cnt {
             let epoch = i + 1;
             let time_epoch = Local::now();
-            println!("beginning training epoch {epoch} out of {iteration_cnt} at {time_epoch}");
+
+            if log_epochs {
+                println!("beginning training epoch {epoch} out of {iteration_cnt} at {time_epoch}");
+            }
 
             training_data_mut.shuffle(&mut rng);
-            self.gradient_descent(&training_data_mut, learning_rate, batch_size);
+            self.batch_gradient_descent(&training_data_mut, learning_rate, batch_size);
         }
 
         let time_end = Local::now();

@@ -39,7 +39,7 @@ fn digits() -> Result<(), Error> {
         &mse_deriv,
     );
 
-    net.train(training_set, 1500, 0.001, 10);
+    net.train(training_set, 100, 0.001, 10, true);
 
     let mut test_rdr = csv::Reader::from_path("src/example_data/digits/test.csv")?;
     let mut test_wtr = csv::Writer::from_path("src/example_data/digits/out_relu.csv")?;
@@ -98,7 +98,7 @@ fn digits_sigmoid_only() -> Result<(), Error> {
         &mse_deriv,
     );
 
-    net.train(training_set, 1500, 0.001, 10);
+    net.train(training_set, 100, 0.001, 10, true);
 
     let mut test_rdr = csv::Reader::from_path("src/example_data/digits/test.csv")?;
     let mut test_wtr = csv::Writer::from_path("src/example_data/digits/out_sig.csv")?;
@@ -141,7 +141,7 @@ fn medium_numbers() {
         &mse_deriv,
     );
 
-    net.train(training_set, 10000, 1.0, 1);
+    net.train(training_set, 10000, 1.0, 1, false);
 
     let test_set = vec![1.0, 0.0, 0.0];
     net.predict(test_set);
@@ -170,7 +170,7 @@ fn medium_numbers_with_more_outputs() {
         &mse_deriv,
     );
 
-    net.train(training_set, 10000, 1.0, 1);
+    net.train(training_set, 10000, 1.0, 1, false);
 
     net.predict(vec![1.0, 0.0, 0.0]);
     let out_map1 = net.get_output();
@@ -209,7 +209,7 @@ fn medium_numbers_with_more_layers() {
         &mse_deriv,
     );
 
-    net.train(training_set, 10000, 1.0, 1);
+    net.train(training_set, 10000, 1.0, 1, true);
 
     net.predict(vec![1.0, 0.0, 0.0]);
     let out_map1 = net.get_output();
