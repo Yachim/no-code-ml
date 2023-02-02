@@ -24,9 +24,9 @@ fn digits() -> Result<(), Error> {
         expected_for_sample[record[0].parse::<usize>().unwrap()] = 1.0;
         expected.push(expected_for_sample);
 
-        let mut inputs_for_sample = vec![0.0; record.len() - 1];
-        for pixel_i in 1..record.len() - 1 {
-            inputs_for_sample[pixel_i] = record[pixel_i].parse::<f32>().unwrap();
+        let mut inputs_for_sample = vec![];
+        for pixel_i in 1..record.len() {
+            inputs_for_sample.push(record[pixel_i].parse::<f32>().unwrap());
         }
         inputs.push(inputs_for_sample);
     }
@@ -43,7 +43,7 @@ fn digits() -> Result<(), Error> {
         &mse,
     );
 
-    net.train(training_set, 100, 0.001, 10, false, true);
+    net.train(training_set, 30, 0.001, 10, false, false);
 
     let mut test_rdr = csv::Reader::from_path("src/example_data/digits/test.csv")?;
     let mut test_wtr = csv::Writer::from_path("src/example_data/digits/out_relu.csv")?;
@@ -53,9 +53,9 @@ fn digits() -> Result<(), Error> {
     for (i, result) in test_rdr.records().enumerate() {
         let record = result?;
 
-        let mut test_input = vec![0.0; record.len()];
-        for pixel_i in 1..record.len() - 1 {
-            test_input[pixel_i] = record[pixel_i].parse::<f32>().unwrap();
+        let mut test_input = vec![];
+        for pixel_i in 0..record.len() {
+            test_input.push(record[pixel_i].parse::<f32>().unwrap());
         }
 
         net.predict(test_input);
@@ -106,7 +106,7 @@ fn digits_sigmoid_only() -> Result<(), Error> {
         &mse,
     );
 
-    net.train(training_set, 100, 0.001, 10, false, true);
+    net.train(training_set, 30, 0.001, 10, false, false);
 
     let mut test_rdr = csv::Reader::from_path("src/example_data/digits/test.csv")?;
     let mut test_wtr = csv::Writer::from_path("src/example_data/digits/out_sig.csv")?;
