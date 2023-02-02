@@ -205,10 +205,10 @@ impl<'a> Network<'a> {
                 total_dbs.push(layer_dbs);
             }
 
-            for (inputs, expected) in batch.iter() {
-                assert_eq!(inputs.len(), self.input.len());
+            for (input, expected) in batch.iter() {
+                assert_eq!(input.len(), self.input.len());
 
-                self.predict(inputs.to_vec());
+                self.predict(input.to_vec());
 
                 let (dws, dbs) = (self.cost_func_derivative)(self, expected.to_vec());
 
