@@ -1,8 +1,26 @@
 use crate::network::Network;
+use std::iter::zip;
 
 pub type CostFunc<'a> = &'a dyn Fn(&Network, Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<Vec<f32>>);
 
-/// Derivative of the Mean Squared Error - (a - y)^2;
+/// Mean Squared Error
+///  - network: the Network instance to apply on
+///  - expected: expected output values; same length as last layer of network
+///
+/// returns the cost
+pub fn mse(network: &Network, expected: Vec<f32>) -> f32 {
+    let last_layer = &network.activated_layers[network.activated_layers.len() - 1];
+
+    assert_eq!(last_layer.len(), expected.len());
+
+    let sum: f32 = zip(last_layer, &expected)
+        .map(|(a, y)| (a - y).powf(2.0))
+        .sum();
+
+    sum / (expected.len() as f32)
+}
+
+/// Derivative of the Mean Squared Error
 ///  - network: the Network instance to apply on
 ///  - expected: expected output values; same length as last layer of network
 ///
@@ -68,4 +86,29 @@ pub fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, 
     }
 
     (dws, dbs)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{mse, mse_deriv};
+    use crate::network::Network;
+    use crate::utils::functions::activation::{sigmoid, sigmoid_deriv};
+
+    #[test]
+    fn test_mse() {
+        let mut net = Network::new(
+            1,
+            vec![],
+            vec!["1"],
+            vec![&sigmoid],
+            vec![&sigmoid_deriv],
+            &mse_deriv,
+        );
+
+        net.activated_layers[0] = vec![1.0];
+
+        assert_eq!(mse(&net, vec![1.0]), 0.0);
+        assert_eq!(mse(&net, vec![0.5]), 0.25);
+        assert_eq!(mse(&net, vec![0.0]), 1.0);
+    }
 }

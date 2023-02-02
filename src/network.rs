@@ -319,6 +319,7 @@ mod tests {
     use super::Network;
     use crate::utils::functions::{
         activation::{sigmoid, sigmoid_deriv},
+        cost::mse,
         cost::mse_deriv,
     };
     use std::collections::HashMap;
