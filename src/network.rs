@@ -163,10 +163,13 @@ impl<'a> Network<'a> {
         };
 
         for i in 0..self.layers[layer_index].len() {
-            let z = dot_product(&prev_layer, &self.weights[layer_index][i])
-                + self.biases[layer_index][i];
+            let weights = &self.weights[layer_index][i];
+            let bias = self.biases[layer_index][i];
+            let activation = self.activations[layer_index];
+
+            let z = dot_product(&prev_layer, weights) + bias;
             self.layers[layer_index][i] = z;
-            self.activated_layers[layer_index][i] = (self.activations[layer_index])(z);
+            self.activated_layers[layer_index][i] = activation(z);
         }
     }
 
