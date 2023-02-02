@@ -4,7 +4,10 @@ mod utils;
 use csv::Error;
 use network::Network;
 use std::iter::zip;
-use utils::functions::{activation::*, cost::mse_deriv};
+use utils::functions::{
+    activation::*,
+    cost::{mse, mse_deriv},
+};
 
 // wrong results - only 1s in output; outputs only 9
 fn digits() -> Result<(), Error> {
@@ -37,9 +40,10 @@ fn digits() -> Result<(), Error> {
         vec![&relu, &relu, &sigmoid],
         vec![&relu_deriv, &relu_deriv, &sigmoid_deriv],
         &mse_deriv,
+        &mse,
     );
 
-    net.train(training_set, 100, 0.001, 10, true);
+    net.train(training_set, 100, 0.001, 10, false, true);
 
     let mut test_rdr = csv::Reader::from_path("src/example_data/digits/test.csv")?;
     let mut test_wtr = csv::Writer::from_path("src/example_data/digits/out_relu.csv")?;
@@ -61,6 +65,9 @@ fn digits() -> Result<(), Error> {
     }
 
     test_wtr.flush()?;
+
+    net.debug();
+
     Ok(())
 }
 
@@ -96,9 +103,10 @@ fn digits_sigmoid_only() -> Result<(), Error> {
         vec![&sigmoid, &sigmoid, &sigmoid],
         vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
         &mse_deriv,
+        &mse,
     );
 
-    net.train(training_set, 100, 0.001, 10, true);
+    net.train(training_set, 100, 0.001, 10, false, true);
 
     let mut test_rdr = csv::Reader::from_path("src/example_data/digits/test.csv")?;
     let mut test_wtr = csv::Writer::from_path("src/example_data/digits/out_sig.csv")?;
@@ -118,6 +126,8 @@ fn digits_sigmoid_only() -> Result<(), Error> {
 
         test_wtr.write_record(&[(i + 1).to_string(), val.to_string()])?;
     }
+
+    net.debug();
 
     test_wtr.flush()?;
 
@@ -139,9 +149,10 @@ fn medium_numbers() {
         vec![&sigmoid],
         vec![&sigmoid_deriv],
         &mse_deriv,
+        &mse,
     );
 
-    net.train(training_set, 10000, 1.0, 1, false);
+    net.train(training_set, 10000, 1.0, 1, true, true);
 
     let test_set = vec![1.0, 0.0, 0.0];
     net.predict(test_set);
@@ -168,9 +179,10 @@ fn medium_numbers_with_more_outputs() {
         vec![&sigmoid],
         vec![&sigmoid_deriv],
         &mse_deriv,
+        &mse,
     );
 
-    net.train(training_set, 10000, 1.0, 1, false);
+    net.train(training_set, 10000, 1.0, 1, true, true);
 
     net.predict(vec![1.0, 0.0, 0.0]);
     let out_map1 = net.get_output();
@@ -207,9 +219,10 @@ fn medium_numbers_with_more_layers() {
         vec![&relu, &relu, &sigmoid],
         vec![&relu_deriv, &relu_deriv, &sigmoid_deriv],
         &mse_deriv,
+        &mse,
     );
 
-    net.train(training_set, 10000, 1.0, 1, true);
+    net.train(training_set, 10000, 1.0, 1, true, true);
 
     net.predict(vec![1.0, 0.0, 0.0]);
     let out_map1 = net.get_output();

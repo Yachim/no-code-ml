@@ -1,4 +1,4 @@
-use crate::utils::functions::cost::CostFunc;
+use crate::utils::functions::cost::{CostFunc, CostFuncDeriv};
 use crate::utils::math::dot_product;
 use chrono::offset::Local;
 use rand::{seq::SliceRandom, Rng};
@@ -59,8 +59,10 @@ pub struct Network<'a> {
     activations: Vec<&'a dyn Fn(f32) -> f32>,
     pub activations_derivatives: Vec<&'a dyn Fn(f32) -> f32>,
 
-    /// derivative of the cost function
-    cost_func_derivative: CostFunc<'a>,
+    cost_func_derivative: CostFuncDeriv<'a>,
+    cost_func: CostFunc<'a>,
+
+    cost_func_values: Vec<f32>,
 }
 
 impl<'a> Network<'a> {
@@ -77,7 +79,8 @@ impl<'a> Network<'a> {
         out_labels: Vec<&'a str>,
         activations: Vec<&'a dyn Fn(f32) -> f32>,
         activations_derivatives: Vec<&'a dyn Fn(f32) -> f32>,
-        cost_func_derivative: CostFunc<'a>,
+        cost_func_derivative: CostFuncDeriv<'a>,
+        cost_func: CostFunc<'a>,
     ) -> Self {
         assert_eq!(activations_derivatives.len(), activations.len());
         assert_eq!(activations.len(), hidden_layers.len() + 1);
@@ -109,7 +112,9 @@ impl<'a> Network<'a> {
             activations,
             activations_derivatives,
             cost_func_derivative,
+            cost_func,
             out_labels,
+            cost_func_values: vec![],
         };
 
         s.initialize_params();
@@ -180,7 +185,12 @@ impl<'a> Network<'a> {
     }
 
     /// does gradient descent over a mini batch
-    fn gradient_descent(&mut self, batch: &Vec<(Vec<f32>, Vec<f32>)>, learning_rate: f32) {
+    fn gradient_descent(
+        &mut self,
+        batch: &Vec<(Vec<f32>, Vec<f32>)>,
+        learning_rate: f32,
+        log_cost_values: bool,
+    ) {
         let batch_size = batch.len();
 
         let mut total_dws: Vec<Vec<Vec<f32>>> = vec![];
@@ -204,6 +214,11 @@ impl<'a> Network<'a> {
             assert_eq!(input.len(), self.input.len());
 
             self.predict(input.to_vec());
+
+            if log_cost_values {
+                let cost = (self.cost_func)(self, expected.to_vec());
+                self.cost_func_values.push(cost);
+            }
 
             let (dws, dbs) = (self.cost_func_derivative)(self, expected.to_vec());
 
@@ -235,10 +250,11 @@ impl<'a> Network<'a> {
         training_data: &Vec<(Vec<f32>, Vec<f32>)>,
         learning_rate: f32,
         batch_size: usize,
+        log_cost_values: bool,
     ) {
         for batch_start_index in (0..training_data.len()).step_by(batch_size) {
             let batch = training_data[batch_start_index..batch_start_index + batch_size].to_owned();
-            self.gradient_descent(&batch, learning_rate);
+            self.gradient_descent(&batch, learning_rate, log_cost_values);
         }
     }
 
@@ -249,6 +265,7 @@ impl<'a> Network<'a> {
         learning_rate: f32,
         batch_size: usize,
         log_epochs: bool,
+        log_cost_values: bool,
     ) {
         let mut rng = rand::thread_rng();
 
@@ -266,7 +283,12 @@ impl<'a> Network<'a> {
             }
 
             training_data_mut.shuffle(&mut rng);
-            self.batch_gradient_descent(&training_data_mut, learning_rate, batch_size);
+            self.batch_gradient_descent(
+                &training_data_mut,
+                learning_rate,
+                batch_size,
+                log_cost_values,
+            );
         }
 
         let time_end = Local::now();
@@ -311,6 +333,7 @@ impl<'a> Network<'a> {
         println!("activations: {:?}", self.activated_layers);
         println!("weights: {:?}", self.weights);
         println!("biases: {:?}", self.biases);
+        println!("costs: {:?}", self.cost_func_values);
     }
 }
 
@@ -333,6 +356,7 @@ mod tests {
             vec![&sigmoid, &sigmoid, &sigmoid],
             vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
             &mse_deriv,
+            &mse,
         );
 
         let mut total_ws = 0;
@@ -356,6 +380,7 @@ mod tests {
             vec![&sigmoid, &sigmoid, &sigmoid],
             vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
             &mse_deriv,
+            &mse,
         );
 
         let mut total_biases = 0;
@@ -377,6 +402,7 @@ mod tests {
             vec![&sigmoid, &sigmoid, &sigmoid],
             vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
             &mse_deriv,
+            &mse,
         );
 
         let mut total_neurons = 0;
@@ -399,6 +425,7 @@ mod tests {
             vec![&sigmoid],
             vec![&sigmoid_deriv],
             &mse_deriv,
+            &mse,
         );
 
         net.input = vec![3.0, 2.0];
@@ -423,6 +450,7 @@ mod tests {
             vec![&sigmoid],
             vec![&sigmoid_deriv],
             &mse_deriv,
+            &mse,
         );
 
         net.activated_layers[0] = vec![3.0, 2.0, 1.0];
@@ -440,6 +468,7 @@ mod tests {
             vec![&sigmoid],
             vec![&sigmoid_deriv],
             &mse_deriv,
+            &mse,
         );
 
         net.activated_layers[0] = vec![3.0, 2.0, 1.0];

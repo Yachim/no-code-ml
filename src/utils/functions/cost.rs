@@ -1,7 +1,8 @@
 use crate::network::Network;
 use std::iter::zip;
 
-pub type CostFunc<'a> = &'a dyn Fn(&Network, Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<Vec<f32>>);
+pub type CostFunc<'a> = &'a dyn Fn(&Network, Vec<f32>) -> f32;
+pub type CostFuncDeriv<'a> = &'a dyn Fn(&Network, Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<Vec<f32>>);
 
 /// Mean Squared Error
 ///  - network: the Network instance to apply on
@@ -103,6 +104,7 @@ mod tests {
             vec![&sigmoid],
             vec![&sigmoid_deriv],
             &mse_deriv,
+            &mse,
         );
 
         net.activated_layers[0] = vec![1.0];
