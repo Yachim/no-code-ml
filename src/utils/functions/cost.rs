@@ -25,7 +25,7 @@ pub fn mse(network: &Network, expected: Vec<f32>) -> f32 {
 ///  - network: the Network instance to apply on
 ///  - expected: expected output values; same length as last layer of network
 ///
-/// returns a change in weights and change in biases
+/// returns a change in weights and change in biases to minimize the result of MSE
 pub fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<Vec<f32>>) {
     assert_eq!(
         network.activated_layers[network.activated_layers.len() - 1].len(),
