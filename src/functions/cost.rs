@@ -114,8 +114,8 @@ pub const MSE: CostFunc = CostFunc {
 #[cfg(test)]
 mod tests {
     use super::{mse, MSE};
+    use crate::functions::{activation::SIGMOID, input_normalizations::NO_NORMALIZATION};
     use crate::network::Network;
-    use crate::utils::functions::{activation::SIGMOID, input_normalizations::NO_NORMALIZATION};
 
     #[test]
     fn test_mse() {

@@ -1,4 +1,4 @@
-use crate::utils::functions::{
+use crate::functions::{
     activation::ActivationFunction, cost::CostFunc, input_normalizations::NormalizationFn,
 };
 use crate::utils::math::dot_product;
@@ -346,7 +346,7 @@ impl<'a> Network<'a> {
 #[cfg(test)]
 mod tests {
     use super::Network;
-    use crate::utils::functions::{
+    use crate::functions::{
         activation::SIGMOID, cost::MSE, input_normalizations::NO_NORMALIZATION,
     };
     use std::collections::HashMap;

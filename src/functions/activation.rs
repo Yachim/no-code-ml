@@ -1,4 +1,4 @@
-use crate::utils::functions::weight_init::{InitFn, HE, XAVIER};
+use crate::functions::weight_init::{InitFn, HE, XAVIER};
 use std::f32::consts;
 
 pub struct ActivationFunction<'a> {

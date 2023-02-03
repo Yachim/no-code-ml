@@ -1,14 +1,15 @@
+mod functions;
 mod network;
 mod utils;
 
 use csv::Error;
-use network::Network;
-use std::iter::zip;
-use utils::functions::{
+use functions::{
     activation::*,
     cost::MSE,
     input_normalizations::{NORMALIZATION, NO_NORMALIZATION},
 };
+use network::Network;
+use std::iter::zip;
 
 // wrong results - only 1s in output; outputs only 9
 fn digits() -> Result<(), Error> {
