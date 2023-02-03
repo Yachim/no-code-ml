@@ -7,7 +7,7 @@ use std::iter::zip;
 use utils::functions::{
     activation::*,
     cost::{mse, mse_deriv},
-    input_normalizations::normalization,
+    input_normalizations::{NORMALIZATION, NO_NORMALIZATION},
 };
 
 // wrong results - only 1s in output; outputs only 9
@@ -41,7 +41,7 @@ fn digits() -> Result<(), Error> {
         vec![&RELU, &RELU, &SIGMOID],
         &mse_deriv,
         &mse,
-        &normalization,
+        &NORMALIZATION,
     );
     net.log_costs = true;
     net.log_epochs = true;
@@ -87,10 +87,10 @@ fn medium_numbers() {
         vec![&SIGMOID],
         &mse_deriv,
         &mse,
-        &normalization,
+        &NO_NORMALIZATION,
     );
 
-    net.train(training_set, 1, 1.0, 4);
+    net.train(training_set, 10000, 1.0, 4);
 
     let test_set = vec![1.0, 0.0, 0.0];
     net.predict(test_set);
@@ -103,6 +103,6 @@ fn medium_numbers() {
 }
 
 fn main() {
-    digits().unwrap();
-    //medium_numbers();
+    //digits().unwrap();
+    medium_numbers();
 }

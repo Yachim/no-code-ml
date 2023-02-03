@@ -73,7 +73,7 @@ pub struct Network<'a> {
     /// log costs at the beginning and at the end of training?
     pub log_costs: bool,
 
-    normalization_fn: NormalizationFn<'a>,
+    normalization_fn: &'a NormalizationFn<'a>,
 }
 
 impl<'a> Network<'a> {
@@ -91,7 +91,7 @@ impl<'a> Network<'a> {
         activation_functions: Vec<&'a ActivationFunction>,
         cost_func_derivative: CostFuncDeriv<'a>,
         cost_func: CostFunc<'a>,
-        normalization_fn: NormalizationFn<'a>,
+        normalization_fn: &'a NormalizationFn<'a>,
     ) -> Self {
         assert_eq!(activation_functions.len(), hidden_layers.len() + 1);
 
@@ -297,7 +297,7 @@ impl<'a> Network<'a> {
     /// predicts the output from the given data
     pub fn predict(&mut self, data: Vec<f32>) {
         self.input = data;
-        (self.normalization_fn)(self);
+        (self.normalization_fn.function)(self);
 
         self.feedforward();
     }
@@ -353,7 +353,7 @@ impl<'a> Network<'a> {
 mod tests {
     use super::Network;
     use crate::utils::functions::{
-        activation::SIGMOID, cost::mse, cost::mse_deriv, input_normalizations::normalization,
+        activation::SIGMOID, cost::mse, cost::mse_deriv, input_normalizations::NO_NORMALIZATION,
     };
     use std::collections::HashMap;
 
@@ -366,7 +366,7 @@ mod tests {
             vec![&SIGMOID, &SIGMOID, &SIGMOID],
             &mse_deriv,
             &mse,
-            &normalization,
+            &NO_NORMALIZATION,
         );
 
         let mut total_ws = 0;
@@ -390,7 +390,7 @@ mod tests {
             vec![&SIGMOID, &SIGMOID, &SIGMOID],
             &mse_deriv,
             &mse,
-            &normalization,
+            &NO_NORMALIZATION,
         );
 
         let mut total_biases = 0;
@@ -412,7 +412,7 @@ mod tests {
             vec![&SIGMOID, &SIGMOID, &SIGMOID],
             &mse_deriv,
             &mse,
-            &normalization,
+            &NO_NORMALIZATION,
         );
 
         let mut total_neurons = 0;
@@ -435,7 +435,7 @@ mod tests {
             vec![&SIGMOID],
             &mse_deriv,
             &mse,
-            &normalization,
+            &NO_NORMALIZATION,
         );
 
         net.input = vec![3.0, 2.0];
@@ -460,7 +460,7 @@ mod tests {
             vec![&SIGMOID],
             &mse_deriv,
             &mse,
-            &normalization,
+            &NO_NORMALIZATION,
         );
 
         net.activated_layers[0] = vec![3.0, 2.0, 1.0];
@@ -478,7 +478,7 @@ mod tests {
             vec![&SIGMOID],
             &mse_deriv,
             &mse,
-            &normalization,
+            &NO_NORMALIZATION,
         );
 
         net.activated_layers[0] = vec![3.0, 2.0, 1.0];
