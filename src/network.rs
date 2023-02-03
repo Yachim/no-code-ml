@@ -66,6 +66,9 @@ pub struct Network<'a> {
 
     /// log epochs when training?
     pub log_epochs: bool,
+
+    /// log costs at the beginning and at the end of training?
+    pub log_costs: bool,
 }
 
 impl<'a> Network<'a> {
@@ -118,6 +121,7 @@ impl<'a> Network<'a> {
             cost_func,
             out_labels,
             log_epochs: false,
+            log_costs: false,
         };
 
         s.initialize_params();
@@ -264,16 +268,24 @@ impl<'a> Network<'a> {
 
         let mut training_data_mut = training_data;
 
-        for i in 0..iteration_cnt {
-            let epoch = i + 1;
-            let time_epoch = Local::now();
+        if self.log_costs {
+            println!("average cost: {}", self.average_cost(&training_data_mut));
+        }
 
+        for i in 0..iteration_cnt {
             if self.log_epochs {
+                let epoch = i + 1;
+                let time_epoch = Local::now();
+
                 println!("beginning training epoch {epoch} out of {iteration_cnt} at {time_epoch}");
             }
 
             training_data_mut.shuffle(&mut rng);
             self.batch_gradient_descent(&training_data_mut, learning_rate, batch_size);
+        }
+
+        if self.log_costs {
+            println!("average cost: {}", self.average_cost(&training_data_mut));
         }
 
         let time_end = Local::now();
@@ -310,6 +322,19 @@ impl<'a> Network<'a> {
         .unwrap();
 
         (*val.0, *val.1)
+    }
+
+    /// predicts values
+    /// computes the average cost against the training data
+    pub fn average_cost(&mut self, data: &TrainingData) -> f32 {
+        let mut cost_sum = 0.0;
+
+        for (inputs, expected) in data {
+            self.predict(inputs.to_vec());
+            cost_sum += (self.cost_func)(self, expected.to_vec());
+        }
+
+        cost_sum / (data.len() as f32)
     }
 
     pub fn debug(&self) {

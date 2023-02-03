@@ -42,6 +42,8 @@ fn digits() -> Result<(), Error> {
         &mse_deriv,
         &mse,
     );
+    net.log_costs = true;
+    net.log_epochs = true;
 
     net.train(training_set, 100, 0.001, 10);
 
