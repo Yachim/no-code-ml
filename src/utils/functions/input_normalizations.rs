@@ -8,7 +8,7 @@ pub struct NormalizationFn<'a> {
     pub formula: &'a str,
 }
 
-fn no_func(network: &mut Network) {}
+fn no_func(_: &mut Network) {}
 pub const NO_NORMALIZATION: NormalizationFn = NormalizationFn {
     function: &no_func,
     description: "",

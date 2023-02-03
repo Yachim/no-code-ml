@@ -1,15 +1,24 @@
 use crate::network::Network;
 use std::iter::zip;
 
-pub type CostFunc<'a> = &'a dyn Fn(&Network, Vec<f32>) -> f32;
-pub type CostFuncDeriv<'a> = &'a dyn Fn(&Network, Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<Vec<f32>>);
+pub struct CostFunc<'a> {
+    pub function: &'a dyn Fn(&Network, Vec<f32>) -> f32,
+    pub derivative: &'a dyn Fn(&Network, Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<Vec<f32>>),
+
+    pub description: &'a str,
+
+    /// latex formula
+    pub formula: &'a str,
+    /// latex formula
+    pub formula_derivative: &'a str,
+}
 
 /// Mean Squared Error
 ///  - network: the Network instance to apply on
 ///  - expected: expected output values; same length as last layer of network
 ///
 /// returns the cost
-pub fn mse(network: &Network, expected: Vec<f32>) -> f32 {
+fn mse(network: &Network, expected: Vec<f32>) -> f32 {
     let last_layer = &network.activated_layers[network.activated_layers.len() - 1];
 
     assert_eq!(last_layer.len(), expected.len());
@@ -27,7 +36,7 @@ pub fn mse(network: &Network, expected: Vec<f32>) -> f32 {
 ///
 /// returns a change in weights and change in biases (gradient);
 /// the opposite of gradient is done outside of the function
-pub fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<Vec<f32>>) {
+fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<Vec<f32>>) {
     assert_eq!(
         network.activated_layers[network.activated_layers.len() - 1].len(),
         expected.len()
@@ -92,11 +101,21 @@ pub fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, 
     (dws, dbs)
 }
 
+pub const MSE: CostFunc = CostFunc {
+    function: &mse,
+    derivative: &mse_deriv,
+
+    description: "",
+
+    formula: "",
+    formula_derivative: "",
+};
+
 #[cfg(test)]
 mod tests {
-    use super::{mse, mse_deriv};
+    use super::{mse, MSE};
     use crate::network::Network;
-    use crate::utils::functions::{activation::SIGMOID, input_normalizations::normalization};
+    use crate::utils::functions::{activation::SIGMOID, input_normalizations::NO_NORMALIZATION};
 
     #[test]
     fn test_mse() {
@@ -105,9 +124,8 @@ mod tests {
             vec![],
             vec!["1"],
             vec![&SIGMOID],
-            &mse_deriv,
-            &mse,
-            &normalization,
+            &MSE,
+            &NO_NORMALIZATION,
         );
 
         net.activated_layers[0] = vec![1.0];

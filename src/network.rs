@@ -1,7 +1,5 @@
 use crate::utils::functions::{
-    activation::ActivationFunction,
-    cost::{CostFunc, CostFuncDeriv},
-    input_normalizations::NormalizationFn,
+    activation::ActivationFunction, cost::CostFunc, input_normalizations::NormalizationFn,
 };
 use crate::utils::math::dot_product;
 use chrono::offset::Local;
@@ -64,8 +62,7 @@ pub struct Network<'a> {
     /// does not inluclude the first (input) layer
     pub activation_functions: Vec<&'a ActivationFunction<'a>>,
 
-    cost_func_derivative: CostFuncDeriv<'a>,
-    cost_func: CostFunc<'a>,
+    cost_func: &'a CostFunc<'a>,
 
     /// log epochs when training?
     pub log_epochs: bool,
@@ -81,17 +78,15 @@ impl<'a> Network<'a> {
     ///  - training_cnt: number of neurons in the input layer
     ///  - hidden_layers: vector of usize; each usize represents the number of neurons in a layer,
     ///  - out_labels: vector of strings; each string represents a label for the output,
-    ///  - activations: activation functions for each layer,
-    ///  - activations_derivatives: derivatives of activation functions for each layer,
-    ///  - cost_func_derivative: cost functions,
+    ///  - activation_functions: activation functions for each layer,
+    ///  - cost_func: cost function
     pub fn new(
         training_cnt: usize,
         hidden_layers: Vec<usize>,
         out_labels: Vec<&'a str>,
         activation_functions: Vec<&'a ActivationFunction>,
-        cost_func_derivative: CostFuncDeriv<'a>,
-        cost_func: CostFunc<'a>,
-        normalization_fn: &'a NormalizationFn<'a>,
+        cost_func: &'a CostFunc,
+        normalization_fn: &'a NormalizationFn,
     ) -> Self {
         assert_eq!(activation_functions.len(), hidden_layers.len() + 1);
 
@@ -120,7 +115,6 @@ impl<'a> Network<'a> {
             weights: vec![],
             biases: vec![],
             activation_functions,
-            cost_func_derivative,
             cost_func,
             out_labels,
             log_epochs: false,
@@ -219,7 +213,7 @@ impl<'a> Network<'a> {
 
             self.predict(input.to_vec());
 
-            let (dws, dbs) = (self.cost_func_derivative)(self, expected.to_vec());
+            let (dws, dbs) = (self.cost_func.derivative)(self, expected.to_vec());
 
             for l in 0..dws.len() {
                 for j in 0..dws[l].len() {
@@ -334,7 +328,7 @@ impl<'a> Network<'a> {
 
         for (inputs, expected) in data {
             self.predict(inputs.to_vec());
-            cost_sum += (self.cost_func)(self, expected.to_vec());
+            cost_sum += (self.cost_func.function)(self, expected.to_vec());
         }
 
         cost_sum / (data.len() as f32)
@@ -353,7 +347,7 @@ impl<'a> Network<'a> {
 mod tests {
     use super::Network;
     use crate::utils::functions::{
-        activation::SIGMOID, cost::mse, cost::mse_deriv, input_normalizations::NO_NORMALIZATION,
+        activation::SIGMOID, cost::MSE, input_normalizations::NO_NORMALIZATION,
     };
     use std::collections::HashMap;
 
@@ -364,8 +358,7 @@ mod tests {
             vec![2, 3],
             vec!["1", "2"],
             vec![&SIGMOID, &SIGMOID, &SIGMOID],
-            &mse_deriv,
-            &mse,
+            &MSE,
             &NO_NORMALIZATION,
         );
 
@@ -388,8 +381,7 @@ mod tests {
             vec![2, 3],
             vec!["1", "2"],
             vec![&SIGMOID, &SIGMOID, &SIGMOID],
-            &mse_deriv,
-            &mse,
+            &MSE,
             &NO_NORMALIZATION,
         );
 
@@ -410,8 +402,7 @@ mod tests {
             vec![2, 3],
             vec!["1", "2"],
             vec![&SIGMOID, &SIGMOID, &SIGMOID],
-            &mse_deriv,
-            &mse,
+            &MSE,
             &NO_NORMALIZATION,
         );
 
@@ -433,8 +424,7 @@ mod tests {
             vec![],
             vec!["1", "2", "3"],
             vec![&SIGMOID],
-            &mse_deriv,
-            &mse,
+            &MSE,
             &NO_NORMALIZATION,
         );
 
@@ -458,8 +448,7 @@ mod tests {
             vec![],
             vec!["1", "2", "3"],
             vec![&SIGMOID],
-            &mse_deriv,
-            &mse,
+            &MSE,
             &NO_NORMALIZATION,
         );
 
@@ -476,8 +465,7 @@ mod tests {
             vec![],
             vec!["1", "2", "3"],
             vec![&SIGMOID],
-            &mse_deriv,
-            &mse,
+            &MSE,
             &NO_NORMALIZATION,
         );
 

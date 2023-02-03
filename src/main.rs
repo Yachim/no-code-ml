@@ -6,7 +6,7 @@ use network::Network;
 use std::iter::zip;
 use utils::functions::{
     activation::*,
-    cost::{mse, mse_deriv},
+    cost::MSE,
     input_normalizations::{NORMALIZATION, NO_NORMALIZATION},
 };
 
@@ -39,8 +39,7 @@ fn digits() -> Result<(), Error> {
         vec![16, 16],
         vec!["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
         vec![&RELU, &RELU, &SIGMOID],
-        &mse_deriv,
-        &mse,
+        &MSE,
         &NORMALIZATION,
     );
     net.log_costs = true;
@@ -85,8 +84,7 @@ fn medium_numbers() {
         vec![],
         vec!["res"],
         vec![&SIGMOID],
-        &mse_deriv,
-        &mse,
+        &MSE,
         &NO_NORMALIZATION,
     );
 
@@ -99,10 +97,9 @@ fn medium_numbers() {
     let out = out_map.get("res").unwrap();
 
     println!("output: {out}");
-    net.debug();
 }
 
 fn main() {
-    //digits().unwrap();
+    digits().unwrap();
     medium_numbers();
 }
