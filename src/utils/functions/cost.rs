@@ -94,7 +94,10 @@ pub fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, 
 mod tests {
     use super::{mse, mse_deriv};
     use crate::network::Network;
-    use crate::utils::functions::activation::{sigmoid, sigmoid_deriv};
+    use crate::utils::functions::{
+        activation::{sigmoid, sigmoid_deriv},
+        input_normalizations::normalization,
+    };
 
     #[test]
     fn test_mse() {
@@ -106,6 +109,7 @@ mod tests {
             vec![&sigmoid_deriv],
             &mse_deriv,
             &mse,
+            &normalization,
         );
 
         net.activated_layers[0] = vec![1.0];
