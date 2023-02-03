@@ -54,14 +54,16 @@ pub fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, 
                 (0..network.activated_layers[l + 1].len())
                     .map(|i| {
                         das[i]
-                            * network.activations_derivatives[l + 1](network.layers[l + 1][i])
+                            * (network.activation_functions[l + 1].derivative)(
+                                network.layers[l + 1][i],
+                            )
                             * network.weights[l + 1][i][j]
                     })
                     .sum()
             };
             new_das.push(da);
 
-            let db = da * network.activations_derivatives[l](network.layers[l][j]);
+            let db = da * (network.activation_functions[l].derivative)(network.layers[l][j]);
             layer_bs.push(db);
 
             let mut neuron_ws: Vec<f32> = vec![];
@@ -73,7 +75,7 @@ pub fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, 
 
             for prev_layer_neuron in prev_layer {
                 let dw = da
-                    * network.activations_derivatives[l](network.layers[l][j])
+                    * (network.activation_functions[l].derivative)(network.layers[l][j])
                     * prev_layer_neuron;
 
                 neuron_ws.push(dw);
@@ -94,10 +96,7 @@ pub fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, 
 mod tests {
     use super::{mse, mse_deriv};
     use crate::network::Network;
-    use crate::utils::functions::{
-        activation::{sigmoid, sigmoid_deriv},
-        input_normalizations::normalization,
-    };
+    use crate::utils::functions::{activation::SIGMOID, input_normalizations::normalization};
 
     #[test]
     fn test_mse() {
@@ -105,8 +104,7 @@ mod tests {
             1,
             vec![],
             vec!["1"],
-            vec![&sigmoid],
-            vec![&sigmoid_deriv],
+            vec![&SIGMOID],
             &mse_deriv,
             &mse,
             &normalization,

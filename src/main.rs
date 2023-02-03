@@ -38,8 +38,7 @@ fn digits() -> Result<(), Error> {
         784,
         vec![16, 16],
         vec!["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
-        vec![&relu, &relu, &sigmoid],
-        vec![&relu_deriv, &relu_deriv, &sigmoid_deriv],
+        vec![&RELU, &RELU, &SIGMOID],
         &mse_deriv,
         &mse,
         &normalization,
@@ -85,14 +84,13 @@ fn medium_numbers() {
         3,
         vec![],
         vec!["res"],
-        vec![&sigmoid],
-        vec![&sigmoid_deriv],
+        vec![&SIGMOID],
         &mse_deriv,
         &mse,
         &normalization,
     );
 
-    net.train(training_set, 10000, 1.0, 1);
+    net.train(training_set, 1, 1.0, 4);
 
     let test_set = vec![1.0, 0.0, 0.0];
     net.predict(test_set);
@@ -100,10 +98,11 @@ fn medium_numbers() {
     let out_map = net.get_output();
     let out = out_map.get("res").unwrap();
 
-    println!("{out}");
+    println!("output: {out}");
     net.debug();
 }
 
 fn main() {
     digits().unwrap();
+    //medium_numbers();
 }

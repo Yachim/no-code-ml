@@ -1,10 +1,11 @@
 use crate::utils::functions::{
+    activation::ActivationFunction,
     cost::{CostFunc, CostFuncDeriv},
-    input_normalizations::{normalization, NormalizationFn},
+    input_normalizations::NormalizationFn,
 };
 use crate::utils::math::dot_product;
 use chrono::offset::Local;
-use rand::{seq::SliceRandom, Rng};
+use rand::seq::SliceRandom;
 use std::collections::HashMap;
 use std::iter::zip;
 
@@ -61,8 +62,7 @@ pub struct Network<'a> {
     /// vector has len of (L - 1)
     /// contains activation functions for all layers except the first (input) layer
     /// does not inluclude the first (input) layer
-    activations: Vec<&'a dyn Fn(f32) -> f32>,
-    pub activations_derivatives: Vec<&'a dyn Fn(f32) -> f32>,
+    pub activation_functions: Vec<&'a ActivationFunction<'a>>,
 
     cost_func_derivative: CostFuncDeriv<'a>,
     cost_func: CostFunc<'a>,
@@ -88,14 +88,12 @@ impl<'a> Network<'a> {
         training_cnt: usize,
         hidden_layers: Vec<usize>,
         out_labels: Vec<&'a str>,
-        activations: Vec<&'a dyn Fn(f32) -> f32>,
-        activations_derivatives: Vec<&'a dyn Fn(f32) -> f32>,
+        activation_functions: Vec<&'a ActivationFunction>,
         cost_func_derivative: CostFuncDeriv<'a>,
         cost_func: CostFunc<'a>,
         normalization_fn: NormalizationFn<'a>,
     ) -> Self {
-        assert_eq!(activations_derivatives.len(), activations.len());
-        assert_eq!(activations.len(), hidden_layers.len() + 1);
+        assert_eq!(activation_functions.len(), hidden_layers.len() + 1);
 
         // all layers except the input (hidden + output)
         // contains neurons count
@@ -121,8 +119,7 @@ impl<'a> Network<'a> {
             activated_layers,
             weights: vec![],
             biases: vec![],
-            activations,
-            activations_derivatives,
+            activation_functions,
             cost_func_derivative,
             cost_func,
             out_labels,
@@ -138,18 +135,16 @@ impl<'a> Network<'a> {
 
     /// randomly sets weights and biases
     fn initialize_params(&mut self) {
-        let mut rng = rand::thread_rng();
-
         let mut biases: Vec<Vec<f32>> = vec![];
         let mut weights: Vec<Vec<Vec<f32>>> = vec![];
 
         for (i, layer) in self.layers.iter().enumerate() {
-            let mut layer_biases: Vec<f32> = vec![];
+            let layer_biases: Vec<f32> = vec![0.0; layer.len()];
             let mut layer_weights: Vec<Vec<f32>> = vec![];
 
-            for _ in 0..layer.len() {
-                layer_biases.push(rng.gen_range(0.0..=1.0));
+            let layer_weights_init_fn = self.activation_functions[i].init_fn.function;
 
+            for _ in 0..layer.len() {
                 let mut neuron_weights: Vec<f32> = vec![];
                 // count of neurons in prevous layer
                 let neuron_cnt = if i == 0 {
@@ -159,7 +154,7 @@ impl<'a> Network<'a> {
                 };
 
                 for _ in 0..neuron_cnt {
-                    neuron_weights.push(rng.gen_range(0.0..=1.0));
+                    neuron_weights.push(layer_weights_init_fn(neuron_cnt));
                 }
 
                 layer_weights.push(neuron_weights);
@@ -184,7 +179,7 @@ impl<'a> Network<'a> {
         for i in 0..self.layers[layer_index].len() {
             let weights = &self.weights[layer_index][i];
             let bias = self.biases[layer_index][i];
-            let activation = self.activations[layer_index];
+            let activation = self.activation_functions[layer_index].function;
 
             let z = dot_product(&prev_layer, weights) + bias;
             self.layers[layer_index][i] = z;
@@ -358,10 +353,7 @@ impl<'a> Network<'a> {
 mod tests {
     use super::Network;
     use crate::utils::functions::{
-        activation::{sigmoid, sigmoid_deriv},
-        cost::mse,
-        cost::mse_deriv,
-        input_normalizations::normalization,
+        activation::SIGMOID, cost::mse, cost::mse_deriv, input_normalizations::normalization,
     };
     use std::collections::HashMap;
 
@@ -371,8 +363,7 @@ mod tests {
             3,
             vec![2, 3],
             vec!["1", "2"],
-            vec![&sigmoid, &sigmoid, &sigmoid],
-            vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
+            vec![&SIGMOID, &SIGMOID, &SIGMOID],
             &mse_deriv,
             &mse,
             &normalization,
@@ -396,8 +387,7 @@ mod tests {
             3,
             vec![2, 3],
             vec!["1", "2"],
-            vec![&sigmoid, &sigmoid, &sigmoid],
-            vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
+            vec![&SIGMOID, &SIGMOID, &SIGMOID],
             &mse_deriv,
             &mse,
             &normalization,
@@ -419,8 +409,7 @@ mod tests {
             3,
             vec![2, 3],
             vec!["1", "2"],
-            vec![&sigmoid, &sigmoid, &sigmoid],
-            vec![&sigmoid_deriv, &sigmoid_deriv, &sigmoid_deriv],
+            vec![&SIGMOID, &SIGMOID, &SIGMOID],
             &mse_deriv,
             &mse,
             &normalization,
@@ -443,8 +432,7 @@ mod tests {
             3,
             vec![],
             vec!["1", "2", "3"],
-            vec![&sigmoid],
-            vec![&sigmoid_deriv],
+            vec![&SIGMOID],
             &mse_deriv,
             &mse,
             &normalization,
@@ -469,8 +457,7 @@ mod tests {
             3,
             vec![],
             vec!["1", "2", "3"],
-            vec![&sigmoid],
-            vec![&sigmoid_deriv],
+            vec![&SIGMOID],
             &mse_deriv,
             &mse,
             &normalization,
@@ -488,8 +475,7 @@ mod tests {
             3,
             vec![],
             vec!["1", "2", "3"],
-            vec![&sigmoid],
-            vec![&sigmoid_deriv],
+            vec![&SIGMOID],
             &mse_deriv,
             &mse,
             &normalization,

@@ -10,7 +10,8 @@ pub fn normalization(network: &mut Network) {
     let max = input
         .iter()
         .max_by(|a, b| a.partial_cmp(b).unwrap())
-        .unwrap();
+        .unwrap()
+        + f32::EPSILON;
 
     let min = input
         .iter()
