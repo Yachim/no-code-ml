@@ -43,7 +43,7 @@ fn digits() -> Result<(), Error> {
         &mse,
     );
 
-    net.train(training_set, 100, 0.001, 10, false, false);
+    net.train(training_set, 100, 0.001, 10);
 
     let mut test_rdr = csv::Reader::from_path("src/example_data/digits/test.csv")?;
     let mut test_wtr = csv::Writer::from_path("src/example_data/digits/out_relu.csv")?;
@@ -89,7 +89,7 @@ fn medium_numbers() {
         &mse,
     );
 
-    net.train(training_set, 10000, 1.0, 1, true, true);
+    net.train(training_set, 10000, 1.0, 1);
 
     let test_set = vec![1.0, 0.0, 0.0];
     net.predict(test_set);

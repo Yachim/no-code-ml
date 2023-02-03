@@ -62,7 +62,8 @@ pub struct Network<'a> {
     cost_func_derivative: CostFuncDeriv<'a>,
     cost_func: CostFunc<'a>,
 
-    cost_func_values: Vec<f32>,
+    /// log epochs when training?
+    pub log_epochs: bool,
 }
 
 impl<'a> Network<'a> {
@@ -114,7 +115,7 @@ impl<'a> Network<'a> {
             cost_func_derivative,
             cost_func,
             out_labels,
-            cost_func_values: vec![],
+            log_epochs: false,
         };
 
         s.initialize_params();
@@ -185,12 +186,7 @@ impl<'a> Network<'a> {
     }
 
     /// does gradient descent over a mini batch
-    fn gradient_descent(
-        &mut self,
-        batch: &Vec<(Vec<f32>, Vec<f32>)>,
-        learning_rate: f32,
-        log_cost_values: bool,
-    ) {
+    fn gradient_descent(&mut self, batch: &Vec<(Vec<f32>, Vec<f32>)>, learning_rate: f32) {
         let batch_size = batch.len();
 
         let mut total_dws: Vec<Vec<Vec<f32>>> = vec![];
@@ -214,11 +210,6 @@ impl<'a> Network<'a> {
             assert_eq!(input.len(), self.input.len());
 
             self.predict(input.to_vec());
-
-            if log_cost_values {
-                let cost = (self.cost_func)(self, expected.to_vec());
-                self.cost_func_values.push(cost);
-            }
 
             let (dws, dbs) = (self.cost_func_derivative)(self, expected.to_vec());
 
@@ -250,11 +241,10 @@ impl<'a> Network<'a> {
         training_data: &Vec<(Vec<f32>, Vec<f32>)>,
         learning_rate: f32,
         batch_size: usize,
-        log_cost_values: bool,
     ) {
         for batch_start_index in (0..training_data.len()).step_by(batch_size) {
             let batch = training_data[batch_start_index..batch_start_index + batch_size].to_owned();
-            self.gradient_descent(&batch, learning_rate, log_cost_values);
+            self.gradient_descent(&batch, learning_rate);
         }
     }
 
@@ -264,8 +254,6 @@ impl<'a> Network<'a> {
         iteration_cnt: usize,
         learning_rate: f32,
         batch_size: usize,
-        log_epochs: bool,
-        log_cost_values: bool,
     ) {
         let mut rng = rand::thread_rng();
 
@@ -278,17 +266,12 @@ impl<'a> Network<'a> {
             let epoch = i + 1;
             let time_epoch = Local::now();
 
-            if log_epochs {
+            if self.log_epochs {
                 println!("beginning training epoch {epoch} out of {iteration_cnt} at {time_epoch}");
             }
 
             training_data_mut.shuffle(&mut rng);
-            self.batch_gradient_descent(
-                &training_data_mut,
-                learning_rate,
-                batch_size,
-                log_cost_values,
-            );
+            self.batch_gradient_descent(&training_data_mut, learning_rate, batch_size);
         }
 
         let time_end = Local::now();
@@ -333,7 +316,6 @@ impl<'a> Network<'a> {
         println!("activations: {:?}", self.activated_layers);
         println!("weights: {:?}", self.weights);
         println!("biases: {:?}", self.biases);
-        println!("costs: {:?}", self.cost_func_values);
     }
 }
 
