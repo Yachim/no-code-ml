@@ -43,7 +43,7 @@ fn digits() -> Result<(), Error> {
         &mse,
     );
 
-    net.train(training_set, 30, 0.001, 10, false, false);
+    net.train(training_set, 100, 0.001, 10, false, false);
 
     let mut test_rdr = csv::Reader::from_path("src/example_data/digits/test.csv")?;
     let mut test_wtr = csv::Writer::from_path("src/example_data/digits/out_relu.csv")?;
@@ -54,8 +54,8 @@ fn digits() -> Result<(), Error> {
         let record = result?;
 
         let mut test_input = vec![];
-        for pixel_i in 0..record.len() {
-            test_input.push(record[pixel_i].parse::<f32>().unwrap());
+        for pixel in &record {
+            test_input.push(pixel.parse::<f32>().unwrap());
         }
 
         net.predict(test_input);
@@ -244,5 +244,4 @@ fn medium_numbers_with_more_layers() {
 
 fn main() {
     digits().unwrap();
-    digits_sigmoid_only().unwrap();
 }
