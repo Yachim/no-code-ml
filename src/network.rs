@@ -5,6 +5,8 @@ use rand::{seq::SliceRandom, Rng};
 use std::collections::HashMap;
 use std::iter::zip;
 
+type TrainingData = Vec<(Vec<f32>, Vec<f32>)>;
+
 /// L = number of layers (except the first (input) layer)
 /// l = current layer
 /// N = number of neurons in the lth layer
@@ -186,7 +188,7 @@ impl<'a> Network<'a> {
     }
 
     /// does gradient descent over a mini batch
-    fn gradient_descent(&mut self, batch: &Vec<(Vec<f32>, Vec<f32>)>, learning_rate: f32) {
+    fn gradient_descent(&mut self, batch: &TrainingData, learning_rate: f32) {
         let batch_size = batch.len();
 
         let mut total_dws: Vec<Vec<Vec<f32>>> = vec![];
@@ -238,7 +240,7 @@ impl<'a> Network<'a> {
     /// splits training data into mini batches
     fn batch_gradient_descent(
         &mut self,
-        training_data: &Vec<(Vec<f32>, Vec<f32>)>,
+        training_data: &TrainingData,
         learning_rate: f32,
         batch_size: usize,
     ) {
@@ -250,7 +252,7 @@ impl<'a> Network<'a> {
 
     pub fn train(
         &mut self,
-        training_data: Vec<(Vec<f32>, Vec<f32>)>,
+        training_data: TrainingData,
         iteration_cnt: usize,
         learning_rate: f32,
         batch_size: usize,
