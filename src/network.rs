@@ -7,7 +7,7 @@ use rand::seq::SliceRandom;
 use std::collections::HashMap;
 use std::iter::zip;
 
-type TrainingData = Vec<(Vec<f32>, Vec<f32>)>;
+pub type TrainingData = Vec<(Vec<f32>, Vec<f32>)>;
 
 /// L = number of layers (except the first (input) layer)
 /// l = current layer
@@ -173,12 +173,11 @@ impl<'a> Network<'a> {
         for i in 0..self.layers[layer_index].len() {
             let weights = &self.weights[layer_index][i];
             let bias = self.biases[layer_index][i];
-            let activation = self.activation_functions[layer_index].function;
 
-            let z = dot_product(&prev_layer, weights) + bias;
-            self.layers[layer_index][i] = z;
-            self.activated_layers[layer_index][i] = activation(z);
+            self.layers[layer_index][i] = dot_product(&prev_layer, weights) + bias;
         }
+        self.activated_layers[layer_index] =
+            (self.activation_functions[layer_index].function)(&self.layers[layer_index]);
     }
 
     fn feedforward(&mut self) {

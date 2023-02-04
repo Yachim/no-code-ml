@@ -54,25 +54,29 @@ fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<
         let mut layer_ws: Vec<Vec<f32>> = vec![];
         let mut layer_bs: Vec<f32> = vec![];
 
+        let layer_activation_derivatives =
+            (network.activation_functions[l].derivative)(&network.layers[l]);
+
         for j in 0..network.activated_layers[l].len() {
             let is_last_layer = l == network.activated_layers.len() - 1;
 
             let da = if is_last_layer {
                 2.0 * (network.activated_layers[l][j] - expected[j])
             } else {
+                let prev_layer_activations_derivatives =
+                    (network.activation_functions[l + 1].derivative)(&network.layers[l + 1]);
+
                 (0..network.activated_layers[l + 1].len())
                     .map(|i| {
                         das[i]
-                            * (network.activation_functions[l + 1].derivative)(
-                                network.layers[l + 1][i],
-                            )
+                            * prev_layer_activations_derivatives[i]
                             * network.weights[l + 1][i][j]
                     })
                     .sum()
             };
             new_das.push(da);
 
-            let db = da * (network.activation_functions[l].derivative)(network.layers[l][j]);
+            let db = da * layer_activation_derivatives[j];
             layer_bs.push(db);
 
             let mut neuron_ws: Vec<f32> = vec![];
@@ -83,9 +87,7 @@ fn mse_deriv(network: &Network, expected: Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<
             };
 
             for prev_layer_neuron in prev_layer {
-                let dw = da
-                    * (network.activation_functions[l].derivative)(network.layers[l][j])
-                    * prev_layer_neuron;
+                let dw = da * layer_activation_derivatives[j] * prev_layer_neuron;
 
                 neuron_ws.push(dw);
             }

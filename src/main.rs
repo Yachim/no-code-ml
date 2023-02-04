@@ -11,7 +11,6 @@ use functions::{
 use network::Network;
 use std::iter::zip;
 
-// wrong results - only 1s in output; outputs only 9
 fn digits() -> Result<(), Error> {
     // https://www.kaggle.com/competitions/digit-recognizer/data
     let mut train_rdr = csv::Reader::from_path("src/example_data/digits/train.csv")?;
@@ -102,5 +101,5 @@ fn medium_numbers() {
 
 fn main() {
     digits().unwrap();
-    medium_numbers();
+    //medium_numbers();
 }
