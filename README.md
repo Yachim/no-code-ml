@@ -102,26 +102,26 @@ The activation function is noted as $f_l$ (activation function for the layer $l$
 
 <!-- definition of sigmoid activation function -->
 ```math
-\sigma(z) = \frac{1}{1 + e^{-z}}
+\sigma(z_j) = \frac{1}{1 + e^{-z_j}}
 ```
 
 <!-- derivative of sigmoid -->
 ```math
-\sigma'(z) = \sigma(z)(1 - \sigma(z))
+\sigma'(z_j) = \sigma(z_j)(1 - \sigma(z_j))
 ```
 
 ### ReLU
 
 <!-- definition of relu activation function -->
 ```math
-ReLU(z) = max(0, z)
+ReLU(z_j) = max(0, z_j)
 ```
 
 <!-- derivative of relu -->
 ```math
-ReLU'(z) = \left\{
+ReLU'(z_j) = \left\{
   \begin{array}{ l l }
-    1 \qquad \textrm{if $z > 0$} \\ 0 \qquad \textrm{if $z \leq 0$*}
+    1 \qquad \textrm{if $z_j > 0$} \\ 0 \qquad \textrm{if $z_j \leq 0$*}
   \end{array}
 \right.
 ```
@@ -136,25 +136,34 @@ The code's implementation normalizes inputs.
 
 <!-- definition of softmax -->
 ```math
-Softmax(z) = \frac{e^{z - max_{\vec{z}}}}{\sum_{i=0}^{n_{\vec{z}} - 1} e^{z - max_{\vec{z}}}}
+Softmax(z_j) = \frac{e^{z_j - max_z}}{sum}
+```
+
+<!-- because github had problem processing sum in denominator -->
+```math
+sum = \sum_{i=0}^{n_z - 1} e^{z - max_z}
 ```
 
 <p align="center">
-  <sup>$max_{\vec{z}}$...maximum value of all values in the layer</sup>
-  <sup>$n_{\vec{z}}$...number of values in the layer</sup>
+  <sup>$max_z$...maximum value of all values in the layer</sup>
+</p>
+
+<p align="center">
+  <sup>$n_z$...number of values in the layer</sup>
 </p>
 
 <!-- derivative of softmax -->
 ```math
 \frac{\partial Softmax(z_i)}{\partial z_j} = Softmax(z_i) (x - Softmax(z_j))
 ```
+
+<!-- the value of x -->
 ```math
 x = \left\{
   \begin{array}{ l l }
-    1 \qquad \textrm{if $i = j$} \\ 0 \qquad \textrm{if $i \neq j$*}
+    1 \qquad \textrm{if $i = j$} \\ 0 \qquad \textrm{if $i \neq j$}
   \end{array}
 \right.
-
 ```
 
 ## Derivatives of cost functions
