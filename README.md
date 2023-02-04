@@ -130,6 +130,33 @@ ReLU'(z) = \left\{
   <sup>*The derivative at zero is not defined. The predefined function in the program returns 0.</sup>
 </p>
 
+### Softmax
+
+The code's implementation normalizes inputs.
+
+<!-- definition of softmax -->
+```math
+Softmax(z) = \frac{e^{z - max_{\vec{z}}}}{\sum_{i=0}^{n_{\vec{z}} - 1} e^{z - max_{\vec{z}}}}
+```
+
+<p align="center">
+  <sup>$max_{\vec{z}}$...maximum value of all values in the layer</sup>
+  <sup>$n_{\vec{z}}$...number of values in the layer</sup>
+</p>
+
+<!-- derivative of softmax -->
+```math
+\frac{\partial Softmax(z_i)}{\partial z_j} = Softmax(z_i) (x - Softmax(z_j))
+```
+```math
+x = \left\{
+  \begin{array}{ l l }
+    1 \qquad \textrm{if $i = j$} \\ 0 \qquad \textrm{if $i \neq j$*}
+  \end{array}
+\right.
+
+```
+
 ## Derivatives of cost functions
 
 ### Mean Squared Error (MSE)
