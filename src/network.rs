@@ -78,7 +78,7 @@ impl<'a> Network<'a> {
     ///  - training_cnt: number of neurons in the input layer
     ///  - hidden_layers: vector of usize; each usize represents the number of neurons in a layer,
     ///  - out_labels: vector of strings; each string represents a label for the output,
-    ///  - activation_functions: activation functions for each layer,
+    ///  - activation_functions: activation functions for each layer, including output
     ///  - cost_func: cost function
     pub fn new(
         training_cnt: usize,
