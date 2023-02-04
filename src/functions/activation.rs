@@ -64,10 +64,11 @@ pub const RELU: ActivationFunction = ActivationFunction {
     init_fn: &HE,
 };
 
-/// softmax activation function
-/// https://deepai.org/machine-learning-glossary-and-terms/softmax-layer
+/// (stable) softmax activation function
+/// https://eli.thegreenplace.net/2016/the-softmax-function-and-its-derivative/
 fn softmax(zs: &Vec<f32>) -> Vec<f32> {
-    let exps = zs.iter().map(|zj| consts::E.powf(*zj));
+    let max = zs.iter().max_by(|a, b| a.partial_cmp(b).unwrap()).unwrap();
+    let exps = zs.iter().map(|zj| consts::E.powf(*zj - max));
     let sum: f32 = exps.to_owned().sum();
     exps.map(|e| e / sum).collect()
 }
@@ -78,6 +79,7 @@ fn sofmax_deriv(zs: &Vec<f32>) -> Vec<f32> {
     vec![0.0]
 }
 pub const SOFTMAX: ActivationFunction = ActivationFunction {
+    //wip, do not use
     function: &softmax,
     derivative: &sofmax_deriv,
 
