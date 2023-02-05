@@ -87,6 +87,7 @@ fn medium_numbers() {
         &MSE,
         &NO_NORMALIZATION,
     );
+    net.log_costs = true;
 
     net.train(training_set, 10000, 1.0, 4);
 
@@ -100,6 +101,7 @@ fn medium_numbers() {
 }
 
 fn main() {
+    medium_numbers();
+    println!("\n\n");
     digits().unwrap();
-    //medium_numbers();
 }

@@ -186,6 +186,88 @@ impl<'a> Network<'a> {
         }
     }
 
+    // returns change in weights and biases
+    fn backprop(&self, expected: &Vec<f32>) -> (Vec<Vec<Vec<f32>>>, Vec<Vec<f32>>) {
+        // prev is used as in the previous iteration (l + 1 layer, since the range is backwards)
+        // all throughout this function
+
+        // dC/da(l + 1) for any layer l in the network
+        let mut prev_layer_cost_derivatives: Vec<f32> = vec![];
+
+        // dC/da(L) where L is the last layer
+        let last_layer_cost_derivatives =
+            (self.cost_func.derivative)(&self.activated_layers.last().unwrap(), expected);
+
+        let mut dws: Vec<Vec<Vec<f32>>> = vec![];
+        let mut dbs: Vec<Vec<f32>> = vec![];
+
+        for l in (0..self.activated_layers.len()).rev() {
+            let mut layer_dws: Vec<Vec<f32>> = vec![];
+            let mut layer_dbs: Vec<f32> = vec![];
+
+            let is_last_layer = l == self.activated_layers.len() - 1;
+
+            // da(l)/dz(l)
+            let layer_activation_derivatives =
+                (self.activation_functions[l].derivative)(&self.layers[l]);
+
+            // da(l + 1)/dz(l + 1)
+            // used only if not last layer
+            let prev_layer_activation_derivatives: Vec<f32> = if is_last_layer {
+                vec![]
+            } else {
+                (self.activation_functions[l + 1].derivative)(&self.layers[l + 1])
+            };
+
+            // dC/da(l)
+            let mut layer_cost_derivatives: Vec<f32> = vec![];
+
+            for j in 0..self.activated_layers[l].len() {
+                // dC/da(l, j)
+                let neuron_cost_derivative: f32 = if is_last_layer {
+                    last_layer_cost_derivatives[j]
+                } else {
+                    (0..self.activated_layers[l + 1].len())
+                        .map(|i| {
+                            prev_layer_cost_derivatives[i]
+                                * prev_layer_activation_derivatives[i]
+                                * self.weights[l + 1][i][j]
+                        })
+                        .sum()
+                };
+                layer_cost_derivatives.push(neuron_cost_derivative);
+
+                let mut neuron_dws: Vec<f32> = vec![];
+
+                for k in 0..self.weights[l][j].len() {
+                    // next as in next in iteration
+                    // previous when doing feedforward
+                    let next_layer_neuron_activation = if l == 0 {
+                        self.input[k]
+                    } else {
+                        self.activated_layers[l - 1][k]
+                    };
+
+                    neuron_dws.push(
+                        neuron_cost_derivative
+                            * layer_activation_derivatives[j]
+                            * next_layer_neuron_activation,
+                    );
+                }
+
+                layer_dbs.push(neuron_cost_derivative * layer_activation_derivatives[j]);
+                layer_dws.push(neuron_dws);
+            }
+
+            dws.insert(0, layer_dws);
+            dbs.insert(0, layer_dbs);
+
+            prev_layer_cost_derivatives = layer_cost_derivatives;
+        }
+
+        (dws, dbs)
+    }
+
     /// does gradient descent over a mini batch
     fn gradient_descent(&mut self, batch: &TrainingData, learning_rate: f32) {
         let batch_size = batch.len();
@@ -212,7 +294,7 @@ impl<'a> Network<'a> {
 
             self.predict(input.to_vec());
 
-            let (dws, dbs) = (self.cost_func.derivative)(self, expected.to_vec());
+            let (dws, dbs) = self.backprop(&expected.to_vec());
 
             for l in 0..dws.len() {
                 for j in 0..dws[l].len() {
@@ -327,7 +409,10 @@ impl<'a> Network<'a> {
 
         for (inputs, expected) in data {
             self.predict(inputs.to_vec());
-            cost_sum += (self.cost_func.function)(self, expected.to_vec());
+            cost_sum += (self.cost_func.function)(
+                self.activated_layers.last().unwrap(),
+                &expected.to_vec(),
+            );
         }
 
         cost_sum / (data.len() as f32)
