@@ -9,7 +9,7 @@ use functions::{
     input_normalizations::{NORMALIZATION, NO_NORMALIZATION},
 };
 use network::Network;
-use utils::csv_loader::{CsvDataLoader, Label};
+use utils::csv_data::{CsvDataLoader, Label};
 
 fn digits() -> Result<(), Error> {
     // https://www.kaggle.com/competitions/digit-recognizer/data
