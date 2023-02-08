@@ -11,16 +11,19 @@ pub struct CsvDataLoader {
     /// specifies how to include columns (blacklist/whitelist)
     pub include_type: IncludeType,
 
-    /// specifies what columns to include cannot
+    /// specifies what columns are inputs
     /// when loading test data it ignores the label column even if included
-    pub include: Vec<usize>,
+    pub data_values: Vec<usize>,
 }
 
-/// for regression specifies the column index
+/// SingleOutputRegression - specifies the column index for the value
+/// MultipleOutputRegression - specifies the columns indexes for the values
 /// for classification specifies the column index and the label strings
 pub enum Label<'a> {
-    Regression(usize),
-    Classification(usize, &'a Vec<&'a str>),
+    SingleOutputRegression(usize),
+    MultipleOutputRegression(&'a Vec<usize>),
+    SingleLabelClassification(usize, &'a Vec<&'a str>),
+    MultipleLabelClassification(), // TODO
 }
 
 impl<'a> CsvDataLoader {
@@ -28,7 +31,7 @@ impl<'a> CsvDataLoader {
         Self {
             // empty blacklist = everything allowed
             include_type: IncludeType::Blacklist,
-            include: vec![],
+            data_values: vec![],
         }
     }
 
@@ -43,8 +46,11 @@ impl<'a> CsvDataLoader {
             let record = result?;
 
             let (expected_for_sample, label_col_i): (Vec<f32>, usize) = match label {
-                Label::Regression(col_i) => (vec![record[col_i].parse().unwrap()], col_i),
-                Label::Classification(col_i, labels) => {
+                Label::SingleOutputRegression(col_i) => {
+                    (vec![record[col_i].parse().unwrap()], col_i)
+                }
+                Label::MultipleOutputRegression(_) => (vec![], 0), // TODO
+                Label::SingleLabelClassification(col_i, labels) => {
                     let mut vals = vec![0.0; labels.len()];
                     let expected_label = &record[col_i];
 
@@ -57,6 +63,7 @@ impl<'a> CsvDataLoader {
 
                     (vals, label_i)
                 }
+                Label::MultipleLabelClassification() => (vec![], 0), // TODO
             };
             expected.push(expected_for_sample);
 
@@ -64,8 +71,8 @@ impl<'a> CsvDataLoader {
                 .filter(|&i| {
                     i != label_col_i
                         && match self.include_type {
-                            IncludeType::Whitelist => self.include.contains(&i),
-                            IncludeType::Blacklist => !self.include.contains(&i),
+                            IncludeType::Whitelist => self.data_values.contains(&i),
+                            IncludeType::Blacklist => !self.data_values.contains(&i),
                         }
                 })
                 .collect();
@@ -95,8 +102,8 @@ impl<'a> CsvDataLoader {
 
             let col_range: Vec<usize> = (0..record.len())
                 .filter(|&i| match self.include_type {
-                    IncludeType::Whitelist => self.include.contains(&i),
-                    IncludeType::Blacklist => !self.include.contains(&i),
+                    IncludeType::Whitelist => self.data_values.contains(&i),
+                    IncludeType::Blacklist => !self.data_values.contains(&i),
                 })
                 .collect();
 

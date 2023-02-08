@@ -18,7 +18,7 @@ fn digits() -> Result<(), Error> {
     let labels = vec!["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
     let training_set = csv_loader.load_labeled_data(
         "src/example_data/digits/train.csv",
-        Label::Classification(0, &labels),
+        Label::SingleLabelClassification(0, &labels),
     )?;
 
     let mut net = Network::new(
