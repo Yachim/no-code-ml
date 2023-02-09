@@ -154,12 +154,12 @@ sum = \sum_{i=0}^{n_z - 1} e^{z - max_z}
 
 <!-- derivative of softmax -->
 ```math
-\frac{\partial Softmax(z_i)}{\partial z_j} = Softmax(z_i) (x - Softmax(z_j))
+\frac{\partial Softmax(z_i)}{\partial z_j} = Softmax(z_i) (\delta_{ij} - Softmax(z_j))
 ```
 
 <!-- the value of x -->
 ```math
-x = \left\{
+\delta_{ij} = \left\{
   \begin{array}{ l l }
     1 \qquad \textrm{if $i = j$} \\ 0 \qquad \textrm{if $i \neq j$}
   \end{array}
