@@ -1,1 +1,6 @@
-<p class="text-red-900">fff</p>
+<script>
+	import Header from "./components/Header.svelte";
+</script>
+
+<Header />
+
