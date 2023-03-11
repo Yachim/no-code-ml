@@ -11,8 +11,14 @@
 			Number of iterations:
 			<input type="number" />
 		</label>
-		<div class="flex justify-between">
+		<div class="flex justify-between gap-3">
 			<button>Load data</button>
+			<label>
+				Cost function:
+				<select>
+					<option>MSE</option>
+				</select>
+			</label>
 			<span>Cost: 0.0</span>
 		</div>
 	</div>
