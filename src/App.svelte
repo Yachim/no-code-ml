@@ -1,8 +1,7 @@
 <script>
-	import Header from "./components/Header.svelte";
-	import MultiLayerPerceptronBody from "./components/MultiLayerPerceptronBody.svelte";
+	import Header from "./lib/components/Header.svelte";
+	import MultiLayerPerceptronBody from "./lib/MultiLayerPerceptronBody.svelte";
 </script>
 
 <Header />
 <MultiLayerPerceptronBody />
-

@@ -4,7 +4,7 @@
 </script>
 
 <header class="w-full px-4 py-2 gap-4 text-2xl bg-headerBg flex">
-	<button>
+	<button class="ignore">
 		<Fa icon={faBars} />
 	</button>
 	<div>
