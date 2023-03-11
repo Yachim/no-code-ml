@@ -141,7 +141,7 @@ Softmax(z_j) = \frac{e^{z_j - max_z}}{sum}
 
 <!-- because github had problem processing sum in denominator -->
 ```math
-sum = \sum_{i=0}^{n_z - 1} e^{z - max_z}
+sum = \sum_{i=0}^{n_z - 1} e^{z_i - max_z}
 ```
 
 <p align="center">
