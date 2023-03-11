@@ -5,7 +5,7 @@
 	let type: "classification" | "regression" = "regression";
 </script>
 
-<Details heading="Network settings">
+<Details heading="Network settings" defaultState={true}>
 	<div class="flex flex-col gap-2">
 		<label>
 			Type:
