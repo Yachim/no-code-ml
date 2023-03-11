@@ -6,5 +6,8 @@
 <details open={defaultState}>
 	<summary class="font-bold text-xl">{heading}</summary>
 	<hr class="my-2" />
-	<slot />
+
+	<div class="flex flex-col gap-2">
+		<slot />
+	</div>
 </details>

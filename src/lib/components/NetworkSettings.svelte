@@ -6,18 +6,16 @@
 </script>
 
 <Details heading="Network settings" defaultState={true}>
-	<div class="flex flex-col gap-2">
-		<label>
-			Type:
-			<select bind:value={type}>
-				<option value="regression">Regression</option>
-				<option value="classification">Classification</option>
-			</select>
-		</label>
+	<label>
+		Type:
+		<select bind:value={type}>
+			<option value="regression">Regression</option>
+			<option value="classification">Classification</option>
+		</select>
+	</label>
 
-		<label>
-			Hidden layers:
-			<input type="number" bind:value={hiddenLayersCntInput} />
-		</label>
-	</div>
+	<label>
+		Hidden layers:
+		<input type="number" bind:value={hiddenLayersCntInput} />
+	</label>
 </Details>
