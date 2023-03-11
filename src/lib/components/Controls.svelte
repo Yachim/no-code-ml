@@ -6,7 +6,6 @@
 <div
 	class="bg-controlsBg absolute bottom-0 right-6 translate-y-[50%] flex rounded-full items-center gap-3"
 >
-	<!-- load data, play, iteration count, and cost info -->
 	<div class="flex pl-4 flex-col gap-0.5">
 		<label>
 			Number of iterations:
