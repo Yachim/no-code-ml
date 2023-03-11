@@ -2,6 +2,7 @@
 	import Controls from "./components/Controls.svelte";
 	import InputSettings from "./components/InputSettings.svelte";
 	import NetworkSettings from "./components/NetworkSettings.svelte";
+	import OutputSettings from "./components/OutputSettings.svelte";
 </script>
 
 <div class="w-full h-full grid place-items-center">
@@ -10,6 +11,9 @@
 	>
 		<NetworkSettings />
 		<InputSettings />
+		<!-- TODO: add settings for hidden layers - activation and neuron cnt -->
+		<OutputSettings />
+
 		<Controls />
 	</div>
 </div>
