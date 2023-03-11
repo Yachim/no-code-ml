@@ -1,9 +1,9 @@
 <script>
-	import NetworkSpecs from "./components/NetworkSpecs.svelte";
-	import TrainingSettings from "./components/TrainingSettings.svelte";
+	import Controls from "./components/Controls.svelte";
 </script>
 
-<div class="w-full h-full relative">
-	<NetworkSpecs />
-	<TrainingSettings />
+<div class="w-full h-full grid place-items-center">
+	<div class="relative bg-headerBg p-4 rounded-xl w-[800px] h-[600px]">
+		<Controls />
+	</div>
 </div>

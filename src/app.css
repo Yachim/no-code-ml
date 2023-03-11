@@ -9,6 +9,11 @@
 		height: 100%;
 	}
 
+	#app {
+		@apply flex flex-col;
+		@apply h-full w-full;
+	}
+
 	button {
 		cursor: pointer;
 	}
