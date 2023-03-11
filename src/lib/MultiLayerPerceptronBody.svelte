@@ -1,11 +1,15 @@
 <script>
 	import Controls from "./components/Controls.svelte";
+	import InputSettings from "./components/InputSettings.svelte";
 	import NetworkSettings from "./components/NetworkSettings.svelte";
 </script>
 
 <div class="w-full h-full grid place-items-center">
-	<div class="relative bg-headerBg p-4 rounded-xl w-[800px] h-[600px]">
+	<div
+		class="relative bg-headerBg p-4 rounded-xl w-2/5 h-[70%] flex flex-col gap-4"
+	>
 		<NetworkSettings />
+		<InputSettings />
 		<Controls />
 	</div>
 </div>
