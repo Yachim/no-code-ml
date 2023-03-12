@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Details from "./reusable/Details.svelte";
+	import Details from "./Details.svelte";
 
 	let outputCnt = 10;
 	let activationFunc: "softmax" | "linear" | "relu" | "sigmoid" = "softmax";

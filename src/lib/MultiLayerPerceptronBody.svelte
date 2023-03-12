@@ -1,9 +1,9 @@
 <script>
 	import Controls from "./components/Controls.svelte";
-	import HiddenLayersSettings from "./components/HiddenLayersSettings.svelte";
-	import InputSettings from "./components/InputSettings.svelte";
-	import NetworkSettings from "./components/NetworkSettings.svelte";
-	import OutputSettings from "./components/OutputSettings.svelte";
+	import HiddenLayersSettings from "./components/reusable/HiddenLayersSettings.svelte";
+	import InputSettings from "./components/reusable/InputSettings.svelte";
+	import NetworkSettings from "./components/reusable/NetworkSettings.svelte";
+	import OutputSettings from "./components/reusable/OutputSettings.svelte";
 
 	let hiddenLayersCnt = 2;
 </script>

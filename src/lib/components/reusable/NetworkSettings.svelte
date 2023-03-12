@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Details from "./reusable/Details.svelte";
+	import Details from "./Details.svelte";
 
 	export let hiddenLayersCnt: number;
 	let type: "classification" | "regression" = "regression";

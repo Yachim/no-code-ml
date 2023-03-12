@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Details from "./reusable/Details.svelte";
+	import Details from "./Details.svelte";
 
 	let inputCnt = 10;
 
