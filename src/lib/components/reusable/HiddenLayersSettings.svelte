@@ -26,12 +26,12 @@
 		<p class="text-lg font-bold">Layer {i + 1}</p>
 
 		<label>
-			Number of output neurons:
+			Number of neurons:
 			<input type="number" bind:value={layer.neuronCnt} />
 		</label>
 
 		<label>
-			Output layer activation function:
+			Layer activation function:
 			<select bind:value={layer.activationFunc}>
 				<option value="relu">ReLU</option>
 				<option value="linear">Linear</option>
