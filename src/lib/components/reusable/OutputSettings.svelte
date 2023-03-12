@@ -1,14 +1,16 @@
 <script lang="ts">
+	import type { ActivationFunction } from "../../../types/network";
+
 	import Details from "./Details.svelte";
 
-	let outputCnt = 10;
-	let activationFunc: "softmax" | "linear" | "relu" | "sigmoid" = "softmax";
+	export let neuronCnt: number;
+	export let activationFunc: ActivationFunction;
 </script>
 
 <Details heading="Output settings">
 	<label>
 		Number of output neurons:
-		<input type="number" bind:value={outputCnt} />
+		<input type="number" bind:value={neuronCnt} />
 	</label>
 
 	<label>

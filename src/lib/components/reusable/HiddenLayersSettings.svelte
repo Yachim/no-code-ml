@@ -1,11 +1,10 @@
 <script lang="ts">
+	import type { HiddenLayers } from "../../../types/network";
+
 	import Details from "./Details.svelte";
 
 	export let hiddenLayersCnt: number;
-	let hiddenLayersSettings: {
-		activationFunc: "softmax" | "linear" | "relu" | "sigmoid";
-		neuronCnt: number;
-	}[] = [];
+	export let hiddenLayersSettings: HiddenLayers;
 
 	$: if (hiddenLayersCnt < hiddenLayersSettings.length) {
 		hiddenLayersSettings = hiddenLayersSettings.slice(0, hiddenLayersCnt);

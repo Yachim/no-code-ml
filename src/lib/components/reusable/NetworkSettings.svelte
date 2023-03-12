@@ -1,8 +1,10 @@
 <script lang="ts">
+	import type { NetworkType } from "../../../types/network";
+
 	import Details from "./Details.svelte";
 
 	export let hiddenLayersCnt: number;
-	let type: "classification" | "regression" = "regression";
+	export let type: NetworkType;
 </script>
 
 <Details heading="Network settings" defaultState={true}>
