@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Details from "./reusable/Details.svelte";
 
-	let hiddenLayersCntInput = 2;
+	export let hiddenLayersCnt: number;
 	let type: "classification" | "regression" = "regression";
 </script>
 
@@ -16,6 +16,6 @@
 
 	<label>
 		Hidden layers:
-		<input type="number" bind:value={hiddenLayersCntInput} />
+		<input type="number" bind:value={hiddenLayersCnt} />
 	</label>
 </Details>

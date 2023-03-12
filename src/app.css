@@ -27,4 +27,8 @@
 	:is(input, select, button):not(.ignore) {
 		@apply bg-bg border-2 border-gray-700 px-2 rounded-lg cursor-pointer;
 	}
+
+	details > summary {
+		cursor: pointer;
+	}
 }
