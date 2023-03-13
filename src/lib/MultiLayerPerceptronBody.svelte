@@ -44,5 +44,8 @@
 		/>
 	</div>
 
-	<Controls />
+	<div class="flex flex-col w-full p-4">
+		<Controls />
+		<!-- load data here -->
+	</div>
 </div>
