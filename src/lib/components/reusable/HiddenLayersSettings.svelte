@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { HiddenLayers } from "../../../types/network";
-
-	import Details from "./Details.svelte";
+	import SettingsSection from "./SettingsSection.svelte";
 
 	export let hiddenLayersCnt: number;
 	export let hiddenLayersSettings: HiddenLayers;
@@ -21,7 +20,7 @@
 	}
 </script>
 
-<Details heading="Hidden layers settings">
+<SettingsSection heading="Hidden layers settings">
 	{#each hiddenLayersSettings as layer, i}
 		<p class="text-lg font-bold">Layer {i + 1}</p>
 
@@ -41,4 +40,4 @@
 			</select>
 		</label>
 	{/each}
-</Details>
+</SettingsSection>

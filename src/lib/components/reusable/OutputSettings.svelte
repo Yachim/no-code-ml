@@ -1,13 +1,12 @@
 <script lang="ts">
 	import type { ActivationFunction } from "../../../types/network";
-
-	import Details from "./Details.svelte";
+	import SettingsSection from "./SettingsSection.svelte";
 
 	export let neuronCnt: number;
 	export let activationFunc: ActivationFunction;
 </script>
 
-<Details heading="Output settings">
+<SettingsSection heading="Output settings">
 	<label>
 		Number of output neurons:
 		<input type="number" bind:value={neuronCnt} />
@@ -23,4 +22,4 @@
 			<option value="softmax">Softmax</option>
 		</select>
 	</label>
-</Details>
+</SettingsSection>

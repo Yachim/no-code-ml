@@ -1,13 +1,12 @@
 <script lang="ts">
 	import type { NetworkType } from "../../../types/network";
-
-	import Details from "./Details.svelte";
+	import SettingsSection from "./SettingsSection.svelte";
 
 	export let hiddenLayersCnt: number;
 	export let type: NetworkType;
 </script>
 
-<Details heading="Network settings" defaultState={true}>
+<SettingsSection heading="Network settings" defaultState={true}>
 	<label>
 		Type:
 		<select bind:value={type}>
@@ -21,4 +20,4 @@
 		<input type="number" bind:value={hiddenLayersCnt} />
 		*
 	</label>
-</Details>
+</SettingsSection>

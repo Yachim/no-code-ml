@@ -1,13 +1,12 @@
 <script lang="ts">
 	import type { Normalization } from "../../../types/network";
-
-	import Details from "./Details.svelte";
+	import SettingsSection from "./SettingsSection.svelte";
 
 	export let neuronCnt: number;
 	export let normalizationFunc: Normalization;
 </script>
 
-<Details heading="Input settings">
+<SettingsSection heading="Input settings">
 	<label>
 		Number of input neurons:
 		<input type="number" bind:value={neuronCnt} />
@@ -20,4 +19,4 @@
 			<option value="normalization">Normalization</option>
 		</select>
 	</label>
-</Details>
+</SettingsSection>
