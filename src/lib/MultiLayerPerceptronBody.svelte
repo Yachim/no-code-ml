@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { faSave } from "@fortawesome/free-solid-svg-icons";
+	import Fa from "svelte-fa";
 	import type {
 		ActivationFunction,
 		HiddenLayers,
@@ -24,26 +26,32 @@
 	let outputActivationFunc: ActivationFunction = "sigmoid";
 </script>
 
-<div class="w-full h-full grid place-items-center">
-	<div
-		class="relative bg-headerBg p-4 rounded-xl w-2/5 h-[70%] flex flex-col gap-4"
-	>
-		<NetworkSettings bind:hiddenLayersCnt bind:type={networkType} />
-		<InputSettings
-			bind:normalizationFunc={inputNormalizationFunc}
-			bind:neuronCnt={inputNeuronCnt}
-		/>
-		{#if hiddenLayersCnt > 0}
-			<HiddenLayersSettings
-				bind:hiddenLayersCnt
-				bind:hiddenLayersSettings
+<div class="w-full h-full flex">
+	<div class="p-4 border-r-border border-r overflow-auto">
+		<div class="flex flex-col-gap-4">
+			<NetworkSettings bind:hiddenLayersCnt bind:type={networkType} />
+			<InputSettings
+				bind:normalizationFunc={inputNormalizationFunc}
+				bind:neuronCnt={inputNeuronCnt}
 			/>
-		{/if}
-		<OutputSettings
-			bind:neuronCnt={outputNeuronCnt}
-			bind:activationFunc={outputActivationFunc}
-		/>
+			{#if hiddenLayersCnt > 0}
+				<HiddenLayersSettings
+					bind:hiddenLayersCnt
+					bind:hiddenLayersSettings
+				/>
+			{/if}
+			<OutputSettings
+				bind:neuronCnt={outputNeuronCnt}
+				bind:activationFunc={outputActivationFunc}
+			/>
+		</div>
 
-		<Controls />
+		<div class="mt-auto flex flex-col gap-2 items-start">
+			<p>* cannot be changed after initial setting</p>
+			<button class="flex gap-1 justify-center items-center">
+				<Fa icon={faSave} class="inline" /> Save
+			</button>
+		</div>
 	</div>
+	<Controls />
 </div>

@@ -9,7 +9,7 @@ module.exports = {
 			colors: {
 				bg: "#191a1e",
 				headerBg: "#212226",
-				controlsBg: "#2c2d30",
+				border: "#2c2d30",
 				text: "#d9d9d9"
 			}
 		},
