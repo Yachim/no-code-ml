@@ -28,6 +28,7 @@
 		<label>
 			Number of neurons:
 			<input type="number" bind:value={layer.neuronCnt} />
+			*
 		</label>
 
 		<label>

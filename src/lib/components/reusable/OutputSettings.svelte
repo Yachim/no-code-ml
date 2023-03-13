@@ -11,6 +11,7 @@
 	<label>
 		Number of output neurons:
 		<input type="number" bind:value={neuronCnt} />
+		*
 	</label>
 
 	<label>

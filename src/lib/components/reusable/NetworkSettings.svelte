@@ -19,5 +19,6 @@
 	<label>
 		Hidden layers:
 		<input type="number" bind:value={hiddenLayersCnt} />
+		*
 	</label>
 </Details>

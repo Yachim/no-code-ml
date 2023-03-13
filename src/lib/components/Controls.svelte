@@ -1,11 +1,18 @@
-<script>
+<script lang="ts">
 	import { faPlay } from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa";
 </script>
 
-<div
-	class="bg-controlsBg absolute bottom-0 right-6 translate-y-[50%] flex rounded-full items-center gap-3"
->
+<!-- 
+	number of iterations
+	load data
+	cost function
+	cost info
+	start training
+	save
+	info about *
+-->
+<div class="w-full mt-auto">
 	<div class="flex pl-4 flex-col gap-0.5">
 		<label>
 			Number of iterations:
