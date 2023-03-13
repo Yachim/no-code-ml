@@ -1,9 +1,10 @@
 <script lang="ts">
 	import type {
-		ActivationFunction,
+		ActivationFunc,
+		CostFunc,
 		HiddenLayers,
 		NetworkType,
-		Normalization,
+		NormalizationFunc,
 	} from "../types/network";
 
 	import Controls from "./components/Controls.svelte";
@@ -15,13 +16,16 @@
 	let hiddenLayersCnt = 2;
 	let networkType: NetworkType = "regression";
 
-	let inputNormalizationFunc: Normalization = "normalization";
+	let inputNormalizationFunc: NormalizationFunc = "normalization";
 	let inputNeuronCnt = 10;
 
 	let hiddenLayersSettings: HiddenLayers = [];
 
 	let outputNeuronCnt = 10;
-	let outputActivationFunc: ActivationFunction = "sigmoid";
+	let outputActivationFunc: ActivationFunc = "sigmoid";
+
+	let costFunc: CostFunc = "mse";
+	let iterationCnt = 10_000;
 </script>
 
 <div class="w-full h-full flex">
@@ -45,7 +49,7 @@
 	</div>
 
 	<div class="flex flex-col w-full p-4">
-		<Controls />
+		<Controls bind:costFunc bind:iterationCnt />
 		<!-- load data here -->
 	</div>
 </div>

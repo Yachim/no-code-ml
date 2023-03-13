@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { ActivationFunction } from "../../../types/network";
+	import type { ActivationFunc } from "../../../types/network";
 	import SettingsSection from "./SettingsSection.svelte";
 
 	export let neuronCnt: number;
-	export let activationFunc: ActivationFunction;
+	export let activationFunc: ActivationFunc;
 </script>
 
 <SettingsSection heading="Output settings">

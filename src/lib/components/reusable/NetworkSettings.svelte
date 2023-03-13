@@ -6,7 +6,7 @@
 	export let type: NetworkType;
 </script>
 
-<SettingsSection heading="Network settings" defaultState={true}>
+<SettingsSection heading="Network settings">
 	<label>
 		Type:
 		<select bind:value={type}>

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { Normalization } from "../../../types/network";
+	import type { NormalizationFunc } from "../../../types/network";
 	import SettingsSection from "./SettingsSection.svelte";
 
 	export let neuronCnt: number;
-	export let normalizationFunc: Normalization;
+	export let normalizationFunc: NormalizationFunc;
 </script>
 
 <SettingsSection heading="Input settings">

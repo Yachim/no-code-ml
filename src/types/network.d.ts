@@ -1,12 +1,14 @@
 export type NetworkType = "classification" | "regression";
 
-export type Normalization = "normalization";
+export type NormalizationFunc = "normalization";
 
-export type ActivationFunction = "softmax" | "relu" | "linear" | "sigmoid";
+export type ActivationFunc = "softmax" | "relu" | "linear" | "sigmoid";
 
 export type HiddenLayer = {
-	activationFunc: ActivationFunction;
+	activationFunc: ActivationFunc;
 	neuronCnt: number;
 };
 
 export type HiddenLayers = HiddenLayer[];
+
+export type CostFunc = "mse";
