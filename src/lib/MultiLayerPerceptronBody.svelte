@@ -8,6 +8,7 @@
 	} from "../types/network";
 
 	import Controls from "./components/Controls.svelte";
+	import DataReader from "./components/DataReader.svelte";
 	import HiddenLayersSettings from "./components/reusable/HiddenLayersSettings.svelte";
 	import InputSettings from "./components/reusable/InputSettings.svelte";
 	import NetworkSettings from "./components/reusable/NetworkSettings.svelte";
@@ -50,6 +51,6 @@
 
 	<div class="flex flex-col w-full p-4">
 		<Controls bind:costFunc bind:iterationCnt />
-		<!-- load data here -->
+		<DataReader />
 	</div>
 </div>
