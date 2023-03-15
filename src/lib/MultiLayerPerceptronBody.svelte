@@ -8,7 +8,7 @@
 	} from "../types/network";
 
 	import Controls from "./components/Controls.svelte";
-	import DataReader from "./components/DataReader.svelte";
+	import DataReader from "./components/reusable/DataReader.svelte";
 	import HiddenLayersSettings from "./components/reusable/HiddenLayersSettings.svelte";
 	import InputSettings from "./components/reusable/InputSettings.svelte";
 	import NetworkSettings from "./components/reusable/NetworkSettings.svelte";
@@ -24,6 +24,7 @@
 
 	let outputNeuronCnt = 10;
 	let outputActivationFunc: ActivationFunc = "sigmoid";
+	let outputNeuronLabels: string[];
 
 	let costFunc: CostFunc = "mse";
 	let iterationCnt = 10_000;
@@ -32,7 +33,7 @@
 	let includedCols: number[];
 </script>
 
-<div class="w-full h-full flex">
+<div class="w-full h-full flex overflow-hidden">
 	<div class="border-r-border border-r p-4 flex flex-col overflow-auto gap-4">
 		<p>* cannot be changed after the first save</p>
 		<NetworkSettings bind:hiddenLayersCnt bind:type={networkType} />
@@ -49,6 +50,7 @@
 		<OutputSettings
 			bind:neuronCnt={outputNeuronCnt}
 			bind:activationFunc={outputActivationFunc}
+			bind:neuronLabels={outputNeuronLabels}
 		/>
 	</div>
 

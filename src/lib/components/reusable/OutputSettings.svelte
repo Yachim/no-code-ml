@@ -4,6 +4,17 @@
 
 	export let neuronCnt: number;
 	export let activationFunc: ActivationFunc;
+	export let neuronLabels: string[];
+	neuronLabels = Array(neuronCnt);
+
+	$: if (neuronCnt >= neuronLabels.length) {
+		neuronLabels = [
+			...neuronLabels,
+			...Array(neuronCnt - neuronLabels.length),
+		];
+	} else {
+		neuronLabels = neuronLabels.slice(0, neuronCnt);
+	}
 </script>
 
 <SettingsSection heading="Output settings">
@@ -22,4 +33,12 @@
 			<option value="softmax">Softmax</option>
 		</select>
 	</label>
+
+	<p class="text-lg font-bold">Labels</p>
+
+	{#each neuronLabels as label, i}
+		<label for="">
+			{i + 1}: <input type="text" bind:value={label} />
+		</label>
+	{/each}
 </SettingsSection>

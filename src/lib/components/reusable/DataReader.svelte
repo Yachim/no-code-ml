@@ -118,7 +118,11 @@
 	}
 </script>
 
-<div class={!files ? "grid place-items-center h-full" : "flex flex-col gap-4"}>
+<div
+	class={`overflow-hidden ${
+		!files ? "grid place-items-center h-full" : "flex flex-col gap-4"
+	}`}
+>
 	<div class={!files ? "" : "flex justify-between"}>
 		<input type="file" accept=".csv" class="ignore" bind:files />
 
@@ -161,22 +165,24 @@
 	</div>
 
 	{#if files && data.length > 0 && headers.length > 0}
-		<table class="w-full border">
-			<tr class="bg-border">
-				{#each headers as cell}
-					<th class="text-center border py-2">
-						{cell}
-					</th>
-				{/each}
-			</tr>
-			{#each data as line, i}
-				<tr class:bg-headerBg={i % 2} class:bg-opacity-70={i % 2}>
-					{#each line as cell}
-						<td class="text-center border py-2">{cell}</td>
+		<div class="overflow-auto">
+			<table class="w-full border overflow-scroll">
+				<tr class="bg-border">
+					{#each headers as cell}
+						<th class="text-center border py-2">
+							{cell}
+						</th>
 					{/each}
 				</tr>
-			{/each}
-		</table>
+				{#each data as line, i}
+					<tr class:bg-headerBg={i % 2} class:bg-opacity-70={i % 2}>
+						{#each line as cell}
+							<td class="text-center border py-2">{cell}</td>
+						{/each}
+					</tr>
+				{/each}
+			</table>
+		</div>
 	{/if}
 </div>
 
