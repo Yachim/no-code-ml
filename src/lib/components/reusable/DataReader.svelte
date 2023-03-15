@@ -1,6 +1,5 @@
 <script lang="ts">
-	// TODO: lift state up - files, training/testing
-	let files: FileList;
+	export let files: FileList;
 
 	const encoding = "utf-8";
 	const decoder = new TextDecoder(encoding);
@@ -18,6 +17,7 @@
 	export let outputCol: number;
 	export let includedCols: number[] = [];
 
+	// TODO: lift state up
 	let type: "training" | "testing" = "training";
 
 	async function readCsvFile(

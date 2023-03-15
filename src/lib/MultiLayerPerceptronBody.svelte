@@ -31,6 +31,7 @@
 	let costFunc: CostFunc = "mse";
 	let iterationCnt = 10_000;
 
+	let files: FileList;
 	let outputCol: number;
 	let includedCols: number[];
 
@@ -53,6 +54,7 @@
 		if (!outputActivationFunc) buttonDisabled = true;
 		if (!costFunc) buttonDisabled = true;
 		if (!iterationCnt || iterationCnt <= 0) buttonDisabled = true;
+		if (!files) buttonDisabled = true;
 		if (outputCol === undefined || outputCol === null)
 			buttonDisabled = true;
 		if (!includedCols || includedCols.length <= 0) buttonDisabled = true;
@@ -85,6 +87,6 @@
 
 	<div class="flex flex-col w-full p-4 gap-4">
 		<Controls bind:costFunc bind:iterationCnt {buttonDisabled} />
-		<DataReader bind:outputCol bind:includedCols />
+		<DataReader bind:outputCol bind:includedCols bind:files />
 	</div>
 </div>
