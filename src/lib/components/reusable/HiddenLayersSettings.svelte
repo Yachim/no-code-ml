@@ -25,9 +25,8 @@
 		<p class="text-lg font-bold">Layer {i + 1}</p>
 
 		<label>
-			Number of neurons:
+			Number of neurons<span class="text-red-600">*</span>:
 			<input type="number" bind:value={layer.neuronCnt} />
-			*
 		</label>
 
 		<label>

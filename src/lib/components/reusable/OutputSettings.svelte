@@ -19,9 +19,8 @@
 
 <SettingsSection heading="Output settings">
 	<label>
-		Number of output neurons:
+		Number of output neurons<span class="text-red-600">*</span>:
 		<input type="number" bind:value={neuronCnt} />
-		*
 	</label>
 
 	<label>

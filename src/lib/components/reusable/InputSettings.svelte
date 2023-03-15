@@ -8,9 +8,8 @@
 
 <SettingsSection heading="Input settings">
 	<label>
-		Number of input neurons:
+		Number of input neurons<span class="text-red-600">*</span>:
 		<input type="number" bind:value={neuronCnt} />
-		*
 	</label>
 
 	<label>

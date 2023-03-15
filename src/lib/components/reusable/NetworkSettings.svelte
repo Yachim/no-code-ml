@@ -16,8 +16,7 @@
 	</label>
 
 	<label>
-		Hidden layers:
+		Hidden layers<span class="text-red-600">*</span>:
 		<input type="number" bind:value={hiddenLayersCnt} />
-		*
 	</label>
 </SettingsSection>

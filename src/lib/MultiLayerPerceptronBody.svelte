@@ -35,7 +35,10 @@
 
 <div class="w-full h-full flex overflow-hidden">
 	<div class="border-r-border border-r p-4 flex flex-col overflow-auto gap-4">
-		<p>* cannot be changed after the first save</p>
+		<p>
+			<span class="text-red-600">*</span> cannot be changed after the first
+			save
+		</p>
 		<NetworkSettings bind:hiddenLayersCnt bind:type={networkType} />
 		<InputSettings
 			bind:normalizationFunc={inputNormalizationFunc}
