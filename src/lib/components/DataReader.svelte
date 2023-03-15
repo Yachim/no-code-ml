@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { faTag } from "@fortawesome/free-solid-svg-icons";
+	import Fa from "svelte-fa";
+
 	let files: FileList;
 
 	const encoding = "utf-8";
@@ -83,51 +86,39 @@
 
 	const maxCols = 10;
 
-	let labelCol: string;
-	let filteredHeaders: string[];
-	let filteredData: string[][];
+	let outputCol: number;
+	// indexes of columns to show in table
+	let filteredIndexes: number[];
 
-	$: if (files) {
-		let labelIndex = +labelCol;
+	$: {
+		console.log("a");
+		if (headers.length > 0 && data.length > 0) {
+			console.log("b1");
+			filteredIndexes = [...Array(maxCols).keys()];
 
-		// if labelIndex is undefined - filteredHeaders has first header and i = 1
-		filteredHeaders = labelIndex ? [headers[labelIndex]] : [headers[0]];
-		let i = labelIndex ?? false ? 0 : 1;
+			if (outputCol ?? false) {
+				console.log("c");
 
-		let accumulated = 0;
-
-		while (accumulated < maxCols - 1) {
-			if (i === labelIndex) {
-				i++;
-				continue;
-			}
-
-			filteredHeaders.push(headers[i]);
-			i++;
-			accumulated++;
-		}
-
-		filteredData = data.map((line) => {
-			// if labelIndex is undefined - filteredHeaders has first header and i = 1
-			const filteredLine =
-				labelIndex ?? false ? [line[labelIndex]] : [line[0]];
-			let i = labelIndex ? 0 : 1;
-
-			let accumulated = 0;
-
-			while (accumulated < maxCols - 1) {
-				if (i === labelIndex) {
-					i++;
-					continue;
+				if (filteredIndexes.includes(outputCol)) {
+					console.log("d1");
+					const i = filteredIndexes.findIndex(
+						(val) => val === outputCol
+					);
+					console.log(i);
+					console.log(filteredIndexes);
+					filteredIndexes.splice(i, 1);
+					console.log(filteredIndexes);
+				} else {
+					console.log("d2");
+					filteredIndexes.splice(filteredIndexes.length - 1, 1);
 				}
 
-				filteredLine.push(line[i]);
-				i++;
-				accumulated++;
+				filteredIndexes = [outputCol, ...filteredIndexes];
 			}
-
-			return filteredLine;
-		});
+		} else {
+			console.log("b2");
+			filteredIndexes = [];
+		}
 	}
 </script>
 
@@ -137,29 +128,36 @@
 
 		{#if files}
 			<label>
-				Label colum:
-				<input bind:value={labelCol} list="header-list" />
-
-				<datalist id="header-list">
+				Label column:
+				<select bind:value={outputCol}>
 					{#each headers as header, i}
-						<option value={i}>{header}</option>
+						<option value={i}>
+							{header}
+						</option>
 					{/each}
-				</datalist></label
-			>
+				</select>
+			</label>
 		{/if}
 	</div>
 
-	{#if files && filteredHeaders && filteredData}
+	{#if files && filteredIndexes.length > 0}
 		<table class="w-full border">
 			<tr class="bg-border">
-				{#each filteredHeaders as cell}
-					<th class="text-center border py-2">{cell}</th>
+				{#each filteredIndexes as cellI}
+					<th class="text-center border py-2">
+						{headers[cellI]}
+						{#if cellI === outputCol}
+							<span class="ml-1" title="Output column">
+								<Fa class="inline" icon={faTag} />
+							</span>
+						{/if}
+					</th>
 				{/each}
 			</tr>
-			{#each filteredData as line, i}
-				<tr class:bg-headerBg={i % 2} class:bg-opacity-50={i % 2}>
-					{#each line.slice(0, maxCols) as cell}
-						<td class="text-center border py-2">{cell}</td>
+			{#each data as line, i}
+				<tr class:bg-headerBg={i % 2} class:bg-opacity-70={i % 2}>
+					{#each filteredIndexes as cellI}
+						<td class="text-center border py-2">{line[cellI]}</td>
 					{/each}
 				</tr>
 			{/each}
