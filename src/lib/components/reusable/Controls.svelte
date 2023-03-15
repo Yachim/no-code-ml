@@ -5,6 +5,7 @@
 
 	export let costFunc: CostFunc;
 	export let iterationCnt: number;
+	export let buttonDisabled: boolean;
 </script>
 
 <!-- 
@@ -26,7 +27,10 @@
 		<input type="number" bind:value={iterationCnt} />
 	</label>
 
-	<button class="flex gap-2 justify-center items-center">
+	<button
+		disabled={buttonDisabled}
+		class="flex gap-2 justify-center items-center disabled:opacity-50"
+	>
 		<Fa icon={faPlay} />
 		Start training
 	</button>

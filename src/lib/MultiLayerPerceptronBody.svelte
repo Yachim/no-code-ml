@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { fa0 } from "@fortawesome/free-solid-svg-icons";
+
 	import type {
 		ActivationFunc,
 		CostFunc,
@@ -31,6 +33,29 @@
 
 	let outputCol: number;
 	let includedCols: number[];
+
+	let buttonDisabled = true;
+	$: {
+		buttonDisabled = false;
+
+		if (!networkType) buttonDisabled = true;
+		if (!inputNormalizationFunc) buttonDisabled = true;
+		if (!inputNeuronCnt || inputNeuronCnt <= 0) buttonDisabled = true;
+		if (hiddenLayersCnt > 0) {
+			if (
+				!hiddenLayersSettings.every(
+					(layer) => layer.activationFunc && layer.neuronCnt > 0
+				)
+			)
+				buttonDisabled = true;
+		}
+		if (!outputNeuronCnt || outputNeuronCnt <= 0) buttonDisabled = true;
+		if (!outputActivationFunc) buttonDisabled = true;
+		if (!costFunc) buttonDisabled = true;
+		if (!iterationCnt || iterationCnt <= 0) buttonDisabled = true;
+		if (!outputCol) buttonDisabled = true;
+		if (!includedCols || includedCols.length <= 0) buttonDisabled = true;
+	}
 </script>
 
 <div class="w-full h-full flex overflow-hidden">
@@ -58,7 +83,7 @@
 	</div>
 
 	<div class="flex flex-col w-full p-4 gap-4">
-		<Controls bind:costFunc bind:iterationCnt />
+		<Controls bind:costFunc bind:iterationCnt {buttonDisabled} />
 		<DataReader bind:outputCol bind:includedCols />
 	</div>
 </div>

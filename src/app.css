@@ -36,6 +36,14 @@
 
 @layer components {
 	.custom-input {
-		@apply bg-bg border-2 border-gray-700 px-2 rounded-lg cursor-pointer;
+		@apply bg-bg border-2 border-gray-700 px-2 rounded-lg;
+	}
+
+	.custom-input:not(:disabled) {
+		@apply cursor-pointer;
+	}
+
+	.custom-input:disabled {
+		@apply cursor-not-allowed;
 	}
 }
