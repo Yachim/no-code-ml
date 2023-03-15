@@ -146,6 +146,9 @@
 				<label>
 					Output column:
 					<select bind:value={outputCol}>
+						<option value={undefined} selected disabled
+							>Select a value</option
+						>
 						{#each allHeaders as header, i}
 							<option value={i}>
 								{header}
