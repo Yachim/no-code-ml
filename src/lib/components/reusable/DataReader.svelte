@@ -107,7 +107,7 @@
 	function toggleAllCols() {
 		if (
 			includedCols.length === allHeaders.length ||
-			((outputCol ?? false) &&
+			(!(outputCol === null || outputCol === undefined) &&
 				includedCols.length === allHeaders.length - 1)
 		) {
 			includedCols = [];

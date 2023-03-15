@@ -53,7 +53,8 @@
 		if (!outputActivationFunc) buttonDisabled = true;
 		if (!costFunc) buttonDisabled = true;
 		if (!iterationCnt || iterationCnt <= 0) buttonDisabled = true;
-		if (!outputCol) buttonDisabled = true;
+		if (outputCol === undefined || outputCol === null)
+			buttonDisabled = true;
 		if (!includedCols || includedCols.length <= 0) buttonDisabled = true;
 	}
 </script>
