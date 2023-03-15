@@ -1,4 +1,5 @@
 <script lang="ts">
+	// TODO: lift state up - files, training/testing
 	let files: FileList;
 
 	const encoding = "utf-8";
@@ -16,6 +17,8 @@
 
 	export let outputCol: number;
 	export let includedCols: number[] = [];
+
+	let type: "training" | "testing" = "training";
 
 	async function readCsvFile(
 		f: File,
@@ -118,11 +121,28 @@
 	}
 </script>
 
-<div
-	class={`overflow-hidden ${
-		!files ? "grid place-items-center h-full" : "flex flex-col gap-4"
-	}`}
->
+<div class="overflow-hidden flex flex-col gap-4">
+	<div class="flex justify-evenly">
+		<button
+			class={`
+				ignore w-full p-2 border-b-2 transition-colors hover:text-opacity-70
+				${type === "training" ? "border-border" : "border-transparent"}
+			`}
+			on:click={() => (type = "training")}
+		>
+			Training
+		</button>
+		<button
+			class={`
+				ignore w-full p-2 border-b-2 transition-colors hover:text-opacity-70
+				${type === "testing" ? "border-border" : "border-transparent"}
+			`}
+			on:click={() => (type = "testing")}
+		>
+			Testing/Predicting
+		</button>
+	</div>
+
 	<div class={!files ? "" : "flex justify-between"}>
 		<input type="file" accept=".csv" class="ignore" bind:files />
 
@@ -165,6 +185,7 @@
 	</div>
 
 	{#if files && data.length > 0 && headers.length > 0}
+		Preview:
 		<div class="overflow-auto">
 			<table class="w-full border overflow-scroll">
 				<tr class="bg-border">
