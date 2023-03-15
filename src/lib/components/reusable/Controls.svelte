@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { faPlay } from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa";
-	import type { CostFunc } from "../../types/network";
+	import type { CostFunc } from "../../../types/network";
 
 	export let costFunc: CostFunc;
 	export let iterationCnt: number;

@@ -7,7 +7,7 @@
 		NormalizationFunc,
 	} from "../types/network";
 
-	import Controls from "./components/Controls.svelte";
+	import Controls from "./components/reusable/Controls.svelte";
 	import DataReader from "./components/reusable/DataReader.svelte";
 	import HiddenLayersSettings from "./components/reusable/HiddenLayersSettings.svelte";
 	import InputSettings from "./components/reusable/InputSettings.svelte";
