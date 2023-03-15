@@ -148,10 +148,35 @@
 
 		{#if files}
 			<div class="flex gap-2 items-end">
-				<label class="custom-input relative">
+				<label>
+					Output column:
+					<select bind:value={outputCol}>
+						<option value={undefined} selected disabled
+							>Select a value</option
+						>
+						{#each allHeaders as header, i}
+							<option value={i}>
+								{header}
+							</option>
+						{/each}
+					</select>
+				</label>
+
+				<label
+					class="custom-input select-cols-toggle-label relative"
+					data-disabled={outputCol === null ||
+						outputCol === undefined}
+					title={outputCol === null || outputCol === undefined
+						? "Select an output column first"
+						: ""}
+				>
 					Select included columns
 
-					<input type="checkbox" class="hidden select-cols-toggle" />
+					<input
+						disabled={outputCol === null || outputCol === undefined}
+						type="checkbox"
+						class="hidden select-cols-toggle"
+					/>
 
 					<div class="select-cols">
 						<button on:click={toggleAllCols}>Toggle all</button>
@@ -165,20 +190,6 @@
 							{/each}
 						</select>
 					</div>
-				</label>
-
-				<label>
-					Output column:
-					<select bind:value={outputCol}>
-						<option value={undefined} selected disabled
-							>Select a value</option
-						>
-						{#each allHeaders as header, i}
-							<option value={i}>
-								{header}
-							</option>
-						{/each}
-					</select>
 				</label>
 			</div>
 		{/if}
@@ -222,5 +233,10 @@
 
 	.select-cols-toggle:checked ~ .select-cols {
 		display: flex;
+	}
+
+	.select-cols-toggle-label[data-disabled="true"] {
+		cursor: not-allowed !important;
+		@apply opacity-50;
 	}
 </style>
