@@ -14,8 +14,8 @@
 	let headers: string[] = [];
 	let data: string[][] = [];
 
-	let outputCol: number;
-	let includedCols: number[] = [];
+	export let outputCol: number;
+	export let includedCols: number[] = [];
 
 	async function readCsvFile(
 		f: File,

@@ -27,6 +27,9 @@
 
 	let costFunc: CostFunc = "mse";
 	let iterationCnt = 10_000;
+
+	let outputCol: number;
+	let includedCols: number[];
 </script>
 
 <div class="w-full h-full flex">
@@ -51,6 +54,6 @@
 
 	<div class="flex flex-col w-full p-4 gap-4">
 		<Controls bind:costFunc bind:iterationCnt />
-		<DataReader />
+		<DataReader bind:outputCol bind:includedCols />
 	</div>
 </div>
