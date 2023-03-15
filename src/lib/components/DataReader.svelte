@@ -4,6 +4,19 @@
 	const encoding = "utf-8";
 	const decoder = new TextDecoder(encoding);
 
+	const maxCols = 10;
+	const maxLines = 20;
+
+	// all headers of a file
+	let allHeaders: string[] = [];
+
+	// length equal to maxCols
+	let headers: string[] = [];
+	let data: string[][] = [];
+
+	let outputCol: number;
+	let includedCols: number[] = [];
+
 	async function readCsvFile(
 		f: File,
 		options?: {
@@ -68,16 +81,6 @@
 		return lines;
 	}
 
-	const maxCols = 10;
-	const maxLines = 20;
-
-	// all headers of a file
-	let allHeaders: string[] = [];
-
-	// length equal to maxCols
-	let headers: string[] = [];
-	let data: string[][] = [];
-
 	$: if (files) {
 		readCsvFile(files.item(0), {
 			linesCnt: 1,
@@ -97,9 +100,6 @@
 		headers = [];
 		data = [];
 	}
-
-	let outputCol: number;
-	let includedCols: number[] = [];
 
 	function toggleAllCols() {
 		if (
