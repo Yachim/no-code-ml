@@ -12,14 +12,14 @@
 	start training
 -->
 <div class="w-full flex gap-4">
-	<label
-		>Cost function
+	<label>
+		Cost function:
 		<select bind:value={costFunc}>
 			<option value="mse">MSE</option>
 		</select>
 	</label>
 
-	<p>Cost: 0.0</p>
+	<!--p>Cost: 0.0</p-->
 
 	<label class="ml-auto">
 		Number of iterations:
