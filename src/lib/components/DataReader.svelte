@@ -124,19 +124,23 @@
 
 		{#if files}
 			<div class="flex gap-2 items-end">
-				<button on:click={toggleAllCols}>Toggle all columns</button>
+				<label class="custom-input relative">
+					Select included columns
 
-				<label>
-					Included columns:
-					<select multiple bind:value={includedCols}>
-						{#each allHeaders as header, i}
-							{#if i !== outputCol}
-								<option value={i}>
-									{header}
-								</option>
-							{/if}
-						{/each}
-					</select>
+					<input type="checkbox" class="hidden select-cols-toggle" />
+
+					<div class="select-cols">
+						<button on:click={toggleAllCols}>Toggle all</button>
+						<select multiple bind:value={includedCols}>
+							{#each allHeaders as header, i}
+								{#if i !== outputCol}
+									<option value={i}>
+										{header}
+									</option>
+								{/if}
+							{/each}
+						</select>
+					</div>
 				</label>
 
 				<label>
@@ -172,3 +176,21 @@
 		</table>
 	{/if}
 </div>
+
+<style>
+	.select-cols {
+		display: none;
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		translate: 0 calc(2px + 100%);
+		padding: 0.5rem;
+		gap: 0.5rem;
+		flex-direction: column;
+		@apply bg-headerBg rounded-lg;
+	}
+
+	.select-cols-toggle:checked ~ .select-cols {
+		display: flex;
+	}
+</style>
