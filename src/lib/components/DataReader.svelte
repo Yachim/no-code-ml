@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { faTag } from "@fortawesome/free-solid-svg-icons";
-	import Fa from "svelte-fa";
-
 	let files: FileList;
 
 	const encoding = "utf-8";
@@ -71,54 +68,53 @@
 		return lines;
 	}
 
+	const maxCols = 10;
+	const maxLines = 20;
+
+	// all headers of a file
+	let allHeaders: string[] = [];
+
+	// length equal to maxCols
 	let headers: string[] = [];
 	let data: string[][] = [];
 
 	$: if (files) {
-		readCsvFile(files.item(0), { linesCnt: 20 }).then((res) => {
+		readCsvFile(files.item(0), {
+			linesCnt: 1,
+		}).then((res) => {
+			allHeaders = res[0];
+		});
+
+		readCsvFile(files.item(0), {
+			linesCnt: maxLines,
+			maxCols: maxCols,
+		}).then((res) => {
 			headers = res[0];
 			data = res.slice(1);
 		});
 	} else {
+		allHeaders = [];
 		headers = [];
 		data = [];
 	}
 
-	const maxCols = 10;
-
 	let outputCol: number;
-	// indexes of columns to show in table
-	let filteredIndexes: number[];
+	let includedCols: number[] = [];
 
-	$: {
-		console.log("a");
-		if (headers.length > 0 && data.length > 0) {
-			console.log("b1");
-			filteredIndexes = [...Array(maxCols).keys()];
-
-			if (outputCol ?? false) {
-				console.log("c");
-
-				if (filteredIndexes.includes(outputCol)) {
-					console.log("d1");
-					const i = filteredIndexes.findIndex(
-						(val) => val === outputCol
-					);
-					console.log(i);
-					console.log(filteredIndexes);
-					filteredIndexes.splice(i, 1);
-					console.log(filteredIndexes);
-				} else {
-					console.log("d2");
-					filteredIndexes.splice(filteredIndexes.length - 1, 1);
-				}
-
-				filteredIndexes = [outputCol, ...filteredIndexes];
-			}
+	function toggleAllCols() {
+		if (
+			includedCols.length === allHeaders.length ||
+			((outputCol ?? false) &&
+				includedCols.length === allHeaders.length - 1)
+		) {
+			includedCols = [];
 		} else {
-			console.log("b2");
-			filteredIndexes = [];
+			includedCols = [...Array(allHeaders.length).keys()];
 		}
+	}
+
+	$: if (includedCols.includes(outputCol)) {
+		includedCols = includedCols.filter((val) => val !== outputCol);
 	}
 </script>
 
@@ -127,37 +123,49 @@
 		<input type="file" accept=".csv" class="ignore" bind:files />
 
 		{#if files}
-			<label>
-				Label column:
-				<select bind:value={outputCol}>
-					{#each headers as header, i}
-						<option value={i}>
-							{header}
-						</option>
-					{/each}
-				</select>
-			</label>
+			<div class="flex gap-2 items-end">
+				<button on:click={toggleAllCols}>Toggle all columns</button>
+
+				<label>
+					Included columns:
+					<select multiple bind:value={includedCols}>
+						{#each allHeaders as header, i}
+							{#if i !== outputCol}
+								<option value={i}>
+									{header}
+								</option>
+							{/if}
+						{/each}
+					</select>
+				</label>
+
+				<label>
+					Output column:
+					<select bind:value={outputCol}>
+						{#each allHeaders as header, i}
+							<option value={i}>
+								{header}
+							</option>
+						{/each}
+					</select>
+				</label>
+			</div>
 		{/if}
 	</div>
 
-	{#if files && filteredIndexes.length > 0}
+	{#if files && data.length > 0 && headers.length > 0}
 		<table class="w-full border">
 			<tr class="bg-border">
-				{#each filteredIndexes as cellI}
+				{#each headers as cell}
 					<th class="text-center border py-2">
-						{headers[cellI]}
-						{#if cellI === outputCol}
-							<span class="ml-1" title="Output column">
-								<Fa class="inline" icon={faTag} />
-							</span>
-						{/if}
+						{cell}
 					</th>
 				{/each}
 			</tr>
 			{#each data as line, i}
 				<tr class:bg-headerBg={i % 2} class:bg-opacity-70={i % 2}>
-					{#each filteredIndexes as cellI}
-						<td class="text-center border py-2">{line[cellI]}</td>
+					{#each line as cell}
+						<td class="text-center border py-2">{cell}</td>
 					{/each}
 				</tr>
 			{/each}
