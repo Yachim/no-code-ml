@@ -6,11 +6,16 @@
 
 	import Header from "./lib/components/Header.svelte";
 	import MultiLayerPerceptronBody from "./lib/MultiLayerPerceptronBody.svelte";
+	import { currentNetId } from "./utils/stores";
 
 	const queryClient = new QueryClient();
 </script>
 
 <QueryClientProvider client={queryClient}>
 	<Header />
-	<MultiLayerPerceptronBody />
+	{#if $currentNetId}
+		<MultiLayerPerceptronBody />
+	{:else}
+		<div class="grid place-items-center h-full">Select a network</div>
+	{/if}
 </QueryClientProvider>
