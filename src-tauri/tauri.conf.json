@@ -12,7 +12,7 @@
   "tauri": {
     "allowlist": {
 		"fs": {
-			"scope": ["$APPDATA/*"],
+			"scope": ["$APPDATA/*", "$APPDATA/**"],
 			"all": true,
 			"readFile": true,
 			"writeFile": true,
