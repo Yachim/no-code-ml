@@ -12,8 +12,17 @@
   "tauri": {
     "allowlist": {
 		"fs": {
+			"scope": ["$APPDATA/*"],
+			"all": true,
 			"readFile": true,
-			"writeFile": true
+			"writeFile": true,
+			"readDir": true,
+			"copyFile": true,
+			"createDir": true,
+			"removeDir": true,
+			"removeFile": true,
+			"renameFile": true,
+			"exists": true
 		}
     },
     "bundle": {
@@ -31,7 +40,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "cz.yachim.no-code-ml",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

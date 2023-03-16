@@ -15,6 +15,8 @@
 	import OutputSettings from "./components/OutputSettings.svelte";
 	import { saveFunc } from "../stores";
 
+	import { writeTextFile, BaseDirectory } from "@tauri-apps/api/fs";
+
 	let hiddenLayersCnt = 2;
 	let networkType: NetworkType = "regression";
 
@@ -35,6 +37,35 @@
 	let includedCols: number[];
 
 	saveFunc.set(() => {
+		writeTextFile(
+			"nets.json",
+			JSON.stringify({
+				name: "",
+				type: "multilayer-perceptron",
+
+				hiddenLayersCnt,
+				networkType,
+
+				inputNormalizationFunc,
+				inputNeuronCnt,
+
+				hiddenLayersSettings,
+
+				outputNeuronCnt,
+				outputActivationFunc,
+				outputNeuronLabels,
+
+				costFunc,
+				iterationCnt,
+
+				// TODO: file
+				outputCol,
+				includedCols,
+			}),
+			{
+				dir: BaseDirectory.AppData,
+			}
+		);
 		console.log("saved");
 	});
 
