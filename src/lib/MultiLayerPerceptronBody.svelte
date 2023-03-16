@@ -13,6 +13,7 @@
 	import InputSettings from "./components/InputSettings.svelte";
 	import NetworkSettings from "./components//NetworkSettings.svelte";
 	import OutputSettings from "./components/OutputSettings.svelte";
+	import { saveFunc } from "../stores";
 
 	let hiddenLayersCnt = 2;
 	let networkType: NetworkType = "regression";
@@ -32,6 +33,10 @@
 	let files: FileList;
 	let outputCol: number;
 	let includedCols: number[];
+
+	saveFunc.set(() => {
+		console.log("saved");
+	});
 
 	let buttonDisabled = true;
 	$: {

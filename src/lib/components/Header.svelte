@@ -5,8 +5,7 @@
 		faPencil,
 		faSave,
 	} from "@fortawesome/free-solid-svg-icons";
-
-	export let saveFunc: () => void;
+	import { saveFunc } from "../../stores";
 </script>
 
 <header class="w-full px-4 py-2 gap-4 text-2xl bg-headerBg flex">
@@ -25,7 +24,7 @@
 			<button
 				class="ignore transition-colors hover:text-opacity-70 text-text"
 				title="Save network"
-				on:click={saveFunc}
+				on:click={$saveFunc}
 			>
 				<Fa icon={faSave} />
 			</button>
