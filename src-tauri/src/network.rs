@@ -19,7 +19,7 @@ pub struct Network<'a> {
     /// the input fields
     pub input: Vec<f32>,
 
-    /// outer vector has len of L
+    /// outer vector has len of (L - 1)
     /// each element represents a layer (l)
     /// does not inluclude the first (input) layer
     ///
@@ -27,7 +27,7 @@ pub struct Network<'a> {
     /// each element represents a neuron's (n) value before activation
     pub layers: Vec<Vec<f32>>,
 
-    /// outer vector has len of L
+    /// outer vector has len of (L - 1)
     /// each element represents a layer (l)
     /// does not inluclude the first (input) layer
     ///
@@ -41,6 +41,7 @@ pub struct Network<'a> {
 
     /// outer vector has len of (L - 1)
     /// each element represents all the weights between lth layer (N) and (l - 1)th layer (M)
+    /// does not inluclude the first (input) layer
     ///
     /// middle vectors can have different len of N
     /// each element represents all weights connected to neuron n
@@ -49,7 +50,7 @@ pub struct Network<'a> {
     /// each element represents a weight conected from neuron m to neuron n
     pub weights: Vec<Vec<Vec<f32>>>,
 
-    /// outer vector has len of L
+    /// outer vector has len of (L - 1)
     /// each element represents a layer (l)
     /// does not inluclude the first (input) layer
     ///
