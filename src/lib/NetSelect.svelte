@@ -17,7 +17,7 @@
 >
 	<button
 		on:click={() => {
-			$creteNetMutation.mutate(null, {
+			$creteNetMutation.mutate("multilayerPerceptron", {
 				onSuccess: (res) => currentNetId.set(res.id),
 			});
 			checked = false;

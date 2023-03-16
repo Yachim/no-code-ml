@@ -37,7 +37,7 @@
 	let includedCols: number[];
 
 	saveFunc.set(() => {
-		writeTextFile(
+		/*writeTextFile(
 			"nets.json",
 			JSON.stringify({
 				name: "",
@@ -65,7 +65,7 @@
 			{
 				dir: BaseDirectory.AppData,
 			}
-		);
+		);*/
 		console.log("saved");
 	});
 

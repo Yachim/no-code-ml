@@ -1,6 +1,4 @@
 <script lang="ts">
-	// TODO: fix the ifs in h1 and h2
-
 	import Fa from "svelte-fa";
 	import {
 		faBars,
@@ -9,6 +7,18 @@
 	} from "@fortawesome/free-solid-svg-icons";
 	import { currentNetId, saveFunc } from "../utils/stores";
 	import NetSelect from "./NetSelect.svelte";
+	import { useRenameNet } from "../utils/queries";
+
+	const renameNetMutation = useRenameNet();
+
+	function renameNet() {
+		let name = prompt("Enter the new name of the network");
+
+		$renameNetMutation.mutate({
+			id: $currentNetId,
+			name,
+		});
+	}
 </script>
 
 <header class="relative w-full px-4 py-2 gap-4 bg-headerBg flex items-center">
@@ -28,6 +38,7 @@
 				<button
 					class="ignore transition-colors hover:text-opacity-70 text-text"
 					title="Edit network"
+					on:click={renameNet}
 				>
 					<Fa icon={faPencil} />
 				</button>

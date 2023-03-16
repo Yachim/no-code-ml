@@ -1,3 +1,5 @@
+export type NetworkModelType = "multilayerPerceptron";
+
 export type NetworkType = "classification" | "regression";
 
 export type NormalizationFunc = "normalization";
