@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { fa0 } from "@fortawesome/free-solid-svg-icons";
-
 	import type {
 		ActivationFunc,
 		CostFunc,
@@ -9,12 +7,12 @@
 		NormalizationFunc,
 	} from "../types/network";
 
-	import Controls from "./components/reusable/Controls.svelte";
-	import DataReader from "./components/reusable/DataReader.svelte";
-	import HiddenLayersSettings from "./components/reusable/HiddenLayersSettings.svelte";
-	import InputSettings from "./components/reusable/InputSettings.svelte";
-	import NetworkSettings from "./components/reusable/NetworkSettings.svelte";
-	import OutputSettings from "./components/reusable/OutputSettings.svelte";
+	import Controls from "./components/Controls.svelte";
+	import DataReader from "./components/DataReader.svelte";
+	import HiddenLayersSettings from "./components/HiddenLayersSettings.svelte";
+	import InputSettings from "./components/InputSettings.svelte";
+	import NetworkSettings from "./components//NetworkSettings.svelte";
+	import OutputSettings from "./components/OutputSettings.svelte";
 
 	let hiddenLayersCnt = 2;
 	let networkType: NetworkType = "regression";

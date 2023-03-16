@@ -3,5 +3,5 @@
 	import MultiLayerPerceptronBody from "./lib/MultiLayerPerceptronBody.svelte";
 </script>
 
-<Header />
+<Header saveFunc={() => {}} />
 <MultiLayerPerceptronBody />
