@@ -13,7 +13,7 @@
 	import InputSettings from "./components/InputSettings.svelte";
 	import NetworkSettings from "./components//NetworkSettings.svelte";
 	import OutputSettings from "./components/OutputSettings.svelte";
-	import { saveFunc } from "../stores";
+	import { saveFunc } from "../utils/stores";
 
 	import { writeTextFile, BaseDirectory } from "@tauri-apps/api/fs";
 

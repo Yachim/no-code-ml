@@ -5,7 +5,7 @@
 		faPencil,
 		faSave,
 	} from "@fortawesome/free-solid-svg-icons";
-	import { saveFunc } from "../../stores";
+	import { saveFunc } from "../../utils/stores";
 </script>
 
 <header class="w-full px-4 py-2 gap-4 text-2xl bg-headerBg flex">
