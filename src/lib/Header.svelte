@@ -7,7 +7,7 @@
 		faPencil,
 		faSave,
 	} from "@fortawesome/free-solid-svg-icons";
-	import { currentNetId, saveFunc } from "../../utils/stores";
+	import { currentNetId, saveFunc } from "../utils/stores";
 	import NetSelect from "./NetSelect.svelte";
 </script>
 

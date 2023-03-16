@@ -4,7 +4,7 @@
 		QueryClientProvider,
 	} from "@sveltestack/svelte-query";
 
-	import Header from "./lib/components/Header.svelte";
+	import Header from "./lib/Header.svelte";
 	import MultiLayerPerceptronBody from "./lib/MultiLayerPerceptronBody.svelte";
 	import { currentNetId } from "./utils/stores";
 

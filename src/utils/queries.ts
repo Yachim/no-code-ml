@@ -19,6 +19,7 @@ export function useNets() {
 	})
 }
 
+// creates a new network and returns info about it
 export function useCreateNet() {
 	const client = useQueryClient();
 
@@ -27,14 +28,16 @@ export function useCreateNet() {
 			JSON.parse(await readTextFile(...netsFileReadSettings)) :
 			[];
 
-		data = [...data, {
+		const newNet = {
 			name: "Unnamed network",
 			id: crypto.randomUUID()
-		}];
+		}
+
+		data = [...data, newNet];
 
 		await writeTextFile(...netsFileWriteSettings(JSON.stringify(data)))
 
-		return data;
+		return newNet;
 	}, {
 		onSuccess: () => client.invalidateQueries("netList")
 	})
