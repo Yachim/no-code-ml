@@ -7,7 +7,14 @@
 	} from "@fortawesome/free-solid-svg-icons";
 	import { currentNetId, saveFunc } from "../utils/stores";
 	import NetSelect from "./NetSelect.svelte";
-	import { useRenameNet } from "../utils/queries";
+	import { useNet, useRenameNet } from "../utils/queries";
+	import type { NetworkModelType } from "../types/network";
+
+	const modelTypeDict: {
+		[key in NetworkModelType]: string;
+	} = {
+		multilayerPerceptron: "Multilayer Perceptron",
+	};
 
 	const renameNetMutation = useRenameNet();
 
@@ -19,6 +26,8 @@
 			name,
 		});
 	}
+
+	const netQuery = useNet();
 </script>
 
 <header class="relative w-full px-4 py-2 gap-4 bg-headerBg flex items-center">
@@ -33,8 +42,8 @@
 
 	<div>
 		<h1 class="text-lg flex gap-3">
-			{#if $currentNetId}
-				Unnamed network
+			{#if $netQuery.isSuccess}
+				{$netQuery.data.name}
 				<button
 					class="ignore transition-colors hover:text-opacity-70 text-text"
 					title="Edit network"
@@ -54,8 +63,8 @@
 			{/if}
 		</h1>
 		<h2 class="text-base">
-			{#if $currentNetId}
-				Multilayer Perceptron
+			{#if $netQuery.isSuccess}
+				{modelTypeDict[$netQuery.data.modelType]}
 			{:else}
 				&nbsp;
 			{/if}

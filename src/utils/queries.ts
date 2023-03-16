@@ -3,6 +3,7 @@ import type { Net, NetList } from "../types/savedData";
 
 import { exists, readTextFile, BaseDirectory, writeTextFile, createDir } from "@tauri-apps/api/fs";
 import type { NetworkModelType } from "../types/network";
+import { currentNetId } from "./stores";
 
 if (!await exists("nets", { dir: BaseDirectory.AppData }))
 	await createDir("nets", { dir: BaseDirectory.AppData });
@@ -73,6 +74,36 @@ export function useRenameNet() {
 
 		await writeTextFile(`nets/net_${data.id}.json`, JSON.stringify(net), { dir: BaseDirectory.AppData });
 	}, {
-		onSuccess: () => client.invalidateQueries("netList")
+		onSuccess: () => {
+			client.invalidateQueries("netList")
+			client.invalidateQueries("net")
+		}
 	})
+}
+
+export function useNet() {
+	let selectedNetId = "";
+
+	const queryOptions = {
+		queryKey: ["net", selectedNetId],
+		queryFn: async () => {
+			const net: Net = JSON.parse(await readTextFile(`nets/net_${selectedNetId}.json`, { dir: BaseDirectory.AppData }));
+
+			return net;
+		},
+		enabled: selectedNetId !== ""
+	}
+
+	const query = useQuery(queryOptions);
+
+	currentNetId.subscribe((value) => {
+		selectedNetId = value;
+		query.setOptions({
+			...queryOptions,
+			queryKey: ["net", value],
+			enabled: value !== ""
+		});
+	})
+
+	return query;
 }
