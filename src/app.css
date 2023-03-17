@@ -45,5 +45,6 @@
 
 	.custom-input:disabled {
 		@apply cursor-not-allowed;
+		@apply opacity-50;
 	}
 }

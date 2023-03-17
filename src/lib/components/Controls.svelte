@@ -29,7 +29,7 @@
 
 	<button
 		disabled={buttonDisabled}
-		class="flex gap-2 justify-center items-center disabled:opacity-50"
+		class="flex gap-2 justify-center items-center"
 	>
 		<Fa icon={faPlay} />
 		Start training
