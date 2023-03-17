@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@sveltestack/svelte-query";
 import type { Net, NetList, NetListMember } from "../types/savedData";
 
-import { exists, readTextFile, BaseDirectory, writeTextFile, createDir } from "@tauri-apps/api/fs";
+import { exists, readTextFile, BaseDirectory, writeTextFile, createDir, removeFile } from "@tauri-apps/api/fs";
 import type { NetworkModelType } from "../types/network";
 import { currentNetId } from "./stores";
 
@@ -34,6 +34,11 @@ async function readNetFile(netId: string): Promise<Net> {
 // writes to $APPDATA/nets/net_{netId}.json
 async function writeNetFile(data: Net) {
 	await writeTextFile(`nets/net_${data.id}.json`, JSON.stringify(data), { dir: BaseDirectory.AppData });
+}
+
+// deletes $APPDATA/nets/net_{netId}.json
+async function deleteNetFile(id: string) {
+	await removeFile(`nets/net_${id}.json`, { dir: BaseDirectory.AppData });
 }
 
 // loads the data file containing list of networks
@@ -106,6 +111,9 @@ export function useRenameNet() {
 	})
 }
 
+// this query is bugged
+//  - empty MultiLayerPerceptronBody
+//  - header still has name after deleting
 export function useNet() {
 	let selectedNetId = "";
 
@@ -131,4 +139,25 @@ export function useNet() {
 	})
 
 	return query;
+}
+
+export function useDeleteNet() {
+	const client = useQueryClient();
+
+	return useMutation(async (id: string) => {
+		const netList = await readNetsFile();
+		const netIndex = netList.findIndex((net) => net.id === id);
+		netList.splice(netIndex, 1);
+		await writeNetsFile(netList);
+
+		deleteNetFile(id);
+
+		return netList;
+	}, {
+		onSuccess: () => {
+			currentNetId.set("");
+			client.invalidateQueries("netList");
+			client.invalidateQueries("net");
+		}
+	})
 }

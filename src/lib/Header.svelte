@@ -4,10 +4,11 @@
 		faBars,
 		faPencil,
 		faSave,
+		faTrashCan,
 	} from "@fortawesome/free-solid-svg-icons";
 	import { currentNetId, saveFunc } from "../utils/stores";
 	import NetSelect from "./NetSelect.svelte";
-	import { useNet, useRenameNet } from "../utils/queries";
+	import { useDeleteNet, useNet, useRenameNet } from "../utils/queries";
 	import type { NetworkModelType } from "../types/network";
 
 	const modelTypeDict: {
@@ -25,6 +26,14 @@
 			id: $currentNetId,
 			name,
 		});
+	}
+
+	const deleteNetMutation = useDeleteNet();
+
+	function deleteNet() {
+		if (confirm("Are you sure you want to delete this network?")) {
+			$deleteNetMutation.mutate($currentNetId);
+		}
 	}
 
 	const netQuery = useNet();
@@ -57,6 +66,13 @@
 					on:click={$saveFunc}
 				>
 					<Fa icon={faSave} />
+				</button>
+				<button
+					class="ignore transition-colors hover:text-opacity-70 text-text"
+					title="Delete network"
+					on:click={deleteNet}
+				>
+					<Fa icon={faTrashCan} />
 				</button>
 			{:else}
 				&nbsp;
