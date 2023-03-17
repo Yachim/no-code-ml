@@ -111,28 +111,21 @@ export function useRenameNet() {
 	})
 }
 
-// this query is bugged
-//  - empty MultiLayerPerceptronBody
-//  - header still has name after deleting
 export function useNet() {
 	let selectedNetId = "";
 
-	const queryOptions = {
-		queryKey: ["net", selectedNetId],
-		queryFn: async () => {
-			const net = await readNetFile(selectedNetId);
+	const query = useQuery(["net", selectedNetId], async () => {
+		const net = await readNetFile(selectedNetId);
 
-			return net;
-		},
-		enabled: selectedNetId !== ""
-	}
-
-	const query = useQuery(queryOptions);
+		return net;
+	}, {
+		enabled: false
+	});
 
 	currentNetId.subscribe((value) => {
 		selectedNetId = value;
-		query.setOptions({
-			...queryOptions,
+
+		query.updateOptions({
 			queryKey: ["net", value],
 			enabled: value !== ""
 		});
