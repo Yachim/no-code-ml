@@ -6,7 +6,7 @@
 		faSave,
 		faTrashCan,
 	} from "@fortawesome/free-solid-svg-icons";
-	import { currentNetId, saveFunc } from "../utils/stores";
+	import { currentNetId, isNotSaved, saveFunc } from "../utils/stores";
 	import NetSelect from "./NetSelect.svelte";
 	import { useDeleteNet, useNet, useRenameNet } from "../utils/queries";
 	import type { NetworkModelType } from "../types/network";
@@ -52,7 +52,13 @@
 	<div>
 		<h1 class="text-lg flex gap-3">
 			{#if $netQuery.isSuccess}
-				{$netQuery.data.name}
+				<p>
+					{$netQuery.data.name}{#if $isNotSaved}
+						<span class="font-bold italic" title="Not saved">
+							*
+						</span>
+					{/if}
+				</p>
 				<button
 					class="ignore transition-colors hover:text-opacity-70 text-text"
 					title="Edit network"

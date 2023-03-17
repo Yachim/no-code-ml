@@ -1,15 +1,24 @@
 <script lang="ts">
-	import type { NormalizationFunc } from "../../../types/network";
+	import type { NormalizationFunc } from "../../types/network";
 	import SettingsSection from "./SettingsSection.svelte";
 
 	export let neuronCnt: number;
 	export let normalizationFunc: NormalizationFunc;
+	// if false some options will be disabled
+	export let initialSetting: boolean;
 </script>
 
 <SettingsSection heading="Input settings">
 	<label>
-		Number of input neurons<span class="text-red-600">*</span>:
-		<input type="number" bind:value={neuronCnt} />
+		Number of input neurons
+		{#if initialSetting}
+			<span class="text-red-600">*</span>:
+		{/if}
+		<input
+			disabled={!initialSetting}
+			type="number"
+			bind:value={neuronCnt}
+		/>
 	</label>
 
 	<label>

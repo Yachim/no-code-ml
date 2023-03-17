@@ -1,11 +1,14 @@
 <script lang="ts">
-	import type { ActivationFunc } from "../../../types/network";
+	import type { ActivationFunc } from "../../types/network";
 	import SettingsSection from "./SettingsSection.svelte";
 
 	export let neuronCnt: number;
 	export let activationFunc: ActivationFunc;
 	export let neuronLabels: string[];
 	neuronLabels = Array(neuronCnt);
+
+	// if false some options will be disabled
+	export let initialSetting: boolean;
 
 	$: if (neuronCnt >= neuronLabels.length) {
 		neuronLabels = [
@@ -19,8 +22,15 @@
 
 <SettingsSection heading="Output settings">
 	<label>
-		Number of output neurons<span class="text-red-600">*</span>:
-		<input type="number" bind:value={neuronCnt} />
+		Number of output neurons
+		{#if initialSetting}
+			<span class="text-red-600">*</span>:
+		{/if}
+		<input
+			disabled={!initialSetting}
+			type="number"
+			bind:value={neuronCnt}
+		/>
 	</label>
 
 	<label>

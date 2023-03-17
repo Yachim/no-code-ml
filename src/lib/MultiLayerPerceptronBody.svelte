@@ -1,126 +1,193 @@
 <script lang="ts">
-	import type {
-		ActivationFunc,
-		CostFunc,
-		HiddenLayers,
-		NetworkType,
-		NormalizationFunc,
-	} from "../types/network";
-
 	import Controls from "./components/Controls.svelte";
 	import DataReader from "./components/DataReader.svelte";
 	import HiddenLayersSettings from "./components/HiddenLayersSettings.svelte";
 	import InputSettings from "./components/InputSettings.svelte";
 	import NetworkSettings from "./components//NetworkSettings.svelte";
 	import OutputSettings from "./components/OutputSettings.svelte";
-	import { saveFunc } from "../utils/stores";
+	import { isNotSaved, saveFunc } from "../utils/stores";
+	import { defaultNetworks, useNet, useSaveNet } from "../utils/queries";
 
-	import { writeTextFile, BaseDirectory } from "@tauri-apps/api/fs";
+	let {
+		hiddenLayersCnt,
+		networkType,
 
-	let hiddenLayersCnt = 2;
-	let networkType: NetworkType = "regression";
+		inputNormalizationFunc,
+		inputNeuronCnt,
 
-	let inputNormalizationFunc: NormalizationFunc = "normalization";
-	let inputNeuronCnt = 10;
+		hiddenLayersSettings,
 
-	let hiddenLayersSettings: HiddenLayers = [];
+		outputNeuronCnt,
+		outputActivationFunc,
+		outputNeuronLabels,
 
-	let outputNeuronCnt = 10;
-	let outputActivationFunc: ActivationFunc = "sigmoid";
-	let outputNeuronLabels: string[];
+		costFunc,
+		iterationCnt,
 
-	let costFunc: CostFunc = "mse";
-	let iterationCnt = 10_000;
+		outputCol,
+		includedCols,
+	} = defaultNetworks.multilayerPerceptron;
 
 	let files: FileList;
-	let outputCol: number;
-	let includedCols: number[];
+
+	const netQuery = useNet();
+
+	let netId = "";
+	$: if ($netQuery.isSuccess && netId !== $netQuery.data.id) {
+		hiddenLayersCnt = $netQuery.data.hiddenLayersCnt;
+		networkType = $netQuery.data.networkType;
+
+		inputNormalizationFunc = $netQuery.data.inputNormalizationFunc;
+		inputNeuronCnt = $netQuery.data.inputNeuronCnt;
+
+		hiddenLayersSettings = $netQuery.data.hiddenLayersSettings;
+
+		outputNeuronCnt = $netQuery.data.outputNeuronCnt;
+		outputActivationFunc = $netQuery.data.outputActivationFunc;
+		outputNeuronLabels = $netQuery.data.outputNeuronLabels;
+
+		costFunc = $netQuery.data.costFunc;
+		iterationCnt = $netQuery.data.iterationCnt;
+
+		outputCol = $netQuery.data.outputCol;
+		includedCols = $netQuery.data.includedCols;
+
+		// so it won't be overwriting values
+		netId = $netQuery.data.id;
+	}
+
+	// FIXME: setting true with objects
+	$: if ($netQuery.isSuccess) {
+		if (hiddenLayersCnt !== $netQuery.data.hiddenLayersCnt)
+			isNotSaved.set(true);
+		else if (networkType !== $netQuery.data.networkType)
+			isNotSaved.set(true);
+		else if (
+			inputNormalizationFunc !== $netQuery.data.inputNormalizationFunc
+		)
+			isNotSaved.set(true);
+		else if (inputNeuronCnt !== $netQuery.data.inputNeuronCnt)
+			isNotSaved.set(true);
+		else if (
+			JSON.stringify(hiddenLayersSettings) !==
+			JSON.stringify($netQuery.data.hiddenLayersSettings)
+		)
+			isNotSaved.set(true);
+		else if (outputNeuronCnt !== $netQuery.data.outputNeuronCnt)
+			isNotSaved.set(true);
+		else if (outputActivationFunc !== $netQuery.data.outputActivationFunc)
+			isNotSaved.set(true);
+		else if (
+			JSON.stringify(outputNeuronLabels) !==
+			JSON.stringify($netQuery.data.outputNeuronLabels)
+		)
+			isNotSaved.set(true);
+		else if (costFunc !== $netQuery.data.costFunc) isNotSaved.set(true);
+		else if (iterationCnt !== $netQuery.data.iterationCnt)
+			isNotSaved.set(true);
+		else if (outputCol !== $netQuery.data.outputCol) isNotSaved.set(true);
+		else if (
+			JSON.stringify(includedCols) !==
+			JSON.stringify($netQuery.data.includedCols)
+		)
+			isNotSaved.set(true);
+		else isNotSaved.set(false);
+	}
+
+	const saveNetMutation = useSaveNet();
 
 	saveFunc.set(() => {
-		/*writeTextFile(
-			"nets.json",
-			JSON.stringify({
-				name: "",
-				type: "multilayer-perceptron",
+		$saveNetMutation.mutate({
+			id: $netQuery.data.id,
+			modelType: $netQuery.data.modelType,
 
-				hiddenLayersCnt,
-				networkType,
+			hiddenLayersCnt,
+			networkType,
 
-				inputNormalizationFunc,
-				inputNeuronCnt,
+			inputNormalizationFunc,
+			inputNeuronCnt,
 
-				hiddenLayersSettings,
+			hiddenLayersSettings,
 
-				outputNeuronCnt,
-				outputActivationFunc,
-				outputNeuronLabels,
+			outputNeuronCnt,
+			outputActivationFunc,
+			outputNeuronLabels,
 
-				costFunc,
-				iterationCnt,
+			costFunc,
+			iterationCnt,
 
-				// TODO: file
-				outputCol,
-				includedCols,
-			}),
-			{
-				dir: BaseDirectory.AppData,
-			}
-		);*/
-		console.log("saved");
+			outputCol,
+			includedCols,
+		});
 	});
 
 	let buttonDisabled = true;
 	$: {
-		buttonDisabled = false;
-
 		if (!networkType) buttonDisabled = true;
-		if (!inputNormalizationFunc) buttonDisabled = true;
-		if (!inputNeuronCnt || inputNeuronCnt <= 0) buttonDisabled = true;
-		if (hiddenLayersCnt > 0) {
-			if (
-				!hiddenLayersSettings.every(
-					(layer) => layer.activationFunc && layer.neuronCnt > 0
-				)
+		else if (!inputNormalizationFunc) buttonDisabled = true;
+		else if (!inputNeuronCnt || inputNeuronCnt <= 0) buttonDisabled = true;
+		else if (
+			hiddenLayersCnt > 0 &&
+			!hiddenLayersSettings.every(
+				(layer) => layer.activationFunc && layer.neuronCnt > 0
 			)
-				buttonDisabled = true;
-		}
-		if (!outputNeuronCnt || outputNeuronCnt <= 0) buttonDisabled = true;
-		if (!outputActivationFunc) buttonDisabled = true;
-		if (!costFunc) buttonDisabled = true;
-		if (!iterationCnt || iterationCnt <= 0) buttonDisabled = true;
-		if (!files) buttonDisabled = true;
-		if (outputCol === undefined || outputCol === null)
+		) {
 			buttonDisabled = true;
-		if (!includedCols || includedCols.length <= 0) buttonDisabled = true;
+		} else if (!outputNeuronCnt || outputNeuronCnt <= 0)
+			buttonDisabled = true;
+		else if (!outputActivationFunc) buttonDisabled = true;
+		else if (!costFunc) buttonDisabled = true;
+		else if (!iterationCnt || iterationCnt <= 0) buttonDisabled = true;
+		else if (!files) buttonDisabled = true;
+		else if (outputCol === undefined || outputCol === null)
+			buttonDisabled = true;
+		else if (!includedCols || includedCols.length <= 0)
+			buttonDisabled = true;
+		else buttonDisabled = false;
 	}
 </script>
 
-<div class="w-full h-full flex overflow-hidden">
-	<div class="border-r-border border-r p-4 flex flex-col overflow-auto gap-4">
-		<p>
-			<span class="text-red-600">*</span> cannot be changed after the first
-			save
-		</p>
-		<NetworkSettings bind:hiddenLayersCnt bind:type={networkType} />
-		<InputSettings
-			bind:normalizationFunc={inputNormalizationFunc}
-			bind:neuronCnt={inputNeuronCnt}
-		/>
-		{#if hiddenLayersCnt > 0}
-			<HiddenLayersSettings
+{#if $netQuery.isError}
+	Error while loading network
+{:else if $netQuery.isSuccess}
+	<div class="w-full h-full flex overflow-hidden">
+		<div
+			class="border-r-border border-r p-4 flex flex-col overflow-auto gap-4"
+		>
+			{#if $netQuery.data.initialSetting}
+				<p>
+					<span class="text-red-600">*</span>
+					cannot be changed after the first save
+				</p>
+			{/if}
+			<NetworkSettings
 				bind:hiddenLayersCnt
-				bind:hiddenLayersSettings
+				bind:type={networkType}
+				initialSetting={$netQuery.data.initialSetting}
 			/>
-		{/if}
-		<OutputSettings
-			bind:neuronCnt={outputNeuronCnt}
-			bind:activationFunc={outputActivationFunc}
-			bind:neuronLabels={outputNeuronLabels}
-		/>
-	</div>
+			<InputSettings
+				bind:normalizationFunc={inputNormalizationFunc}
+				bind:neuronCnt={inputNeuronCnt}
+				initialSetting={$netQuery.data.initialSetting}
+			/>
+			{#if hiddenLayersCnt > 0}
+				<HiddenLayersSettings
+					bind:hiddenLayersCnt
+					bind:hiddenLayersSettings
+					initialSetting={$netQuery.data.initialSetting}
+				/>
+			{/if}
+			<OutputSettings
+				bind:neuronCnt={outputNeuronCnt}
+				bind:activationFunc={outputActivationFunc}
+				bind:neuronLabels={outputNeuronLabels}
+				initialSetting={$netQuery.data.initialSetting}
+			/>
+		</div>
 
-	<div class="flex flex-col w-full p-4 gap-4">
-		<Controls bind:costFunc bind:iterationCnt {buttonDisabled} />
-		<DataReader bind:outputCol bind:includedCols bind:files />
+		<div class="flex flex-col w-full p-4 gap-4">
+			<Controls bind:costFunc bind:iterationCnt {buttonDisabled} />
+			<DataReader bind:outputCol bind:includedCols bind:files />
+		</div>
 	</div>
-</div>
+{/if}

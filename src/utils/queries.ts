@@ -41,6 +41,34 @@ async function deleteNetFile(id: string) {
 	await removeFile(`nets/net_${id}.json`, { dir: BaseDirectory.AppData });
 }
 
+export const defaultNetworks: {
+	[key in NetworkModelType]: Omit<Net, "id">
+} = {
+	"multilayerPerceptron": {
+		name: "Unnamed network",
+		modelType: "multilayerPerceptron",
+		initialSetting: true,
+
+		hiddenLayersCnt: 2,
+		networkType: "regression",
+
+		inputNormalizationFunc: "normalization",
+		inputNeuronCnt: 10,
+
+		hiddenLayersSettings: [],
+
+		outputNeuronCnt: 1,
+		outputActivationFunc: "sigmoid",
+		outputNeuronLabels: [],
+
+		costFunc: "mse",
+		iterationCnt: 10_000,
+
+		outputCol: -1,
+		includedCols: []
+	}
+};
+
 // loads the data file containing list of networks
 export function useNets() {
 	return useQuery<NetList>("netList", async () => {
@@ -64,16 +92,19 @@ export function useCreateNet() {
 			console.log("1 in 2.71 quintillion moment happened.")
 		}
 
+		const defaultNetwork = defaultNetworks[modelType];
+
 		const newNetListMember: NetListMember = {
-			name: "Unnamed network",
+			name: defaultNetwork.name,
+			modelType,
 			id,
-			modelType
 		}
 
 		data = [...data, newNetListMember];
 
 		const newNet: Net = {
-			...newNetListMember,
+			...defaultNetwork,
+			id,
 			initialSetting: true
 		}
 
@@ -134,6 +165,25 @@ export function useNet() {
 	return query;
 }
 
+export function useSaveNet() {
+	const client = useQueryClient();
+
+	// TODO: omit values from the net parameter that cannot be modified after initial setting (e.g. hiddenLayersCnt)
+	return useMutation(async (net: Omit<Net, "initialSetting" | "name">) => {
+		const { name } = await readNetFile(net.id);
+
+		await writeNetFile({
+			name,
+			...net,
+			initialSetting: false
+		});
+	}, {
+		onSuccess: () => {
+			client.invalidateQueries("net");
+		}
+	})
+}
+
 export function useDeleteNet() {
 	const client = useQueryClient();
 
@@ -144,6 +194,7 @@ export function useDeleteNet() {
 		await writeNetsFile(netList);
 
 		deleteNetFile(id);
+		// TODO: delete $APPDATA/trained_params/net_{id}.json
 
 		return netList;
 	}, {

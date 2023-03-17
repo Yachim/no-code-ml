@@ -1,9 +1,11 @@
 <script lang="ts">
-	import type { HiddenLayers } from "../../../types/network";
+	import type { HiddenLayers } from "../../types/network";
 	import SettingsSection from "./SettingsSection.svelte";
 
 	export let hiddenLayersCnt: number;
 	export let hiddenLayersSettings: HiddenLayers;
+	// if false some options will be disabled
+	export let initialSetting: boolean;
 
 	$: if (hiddenLayersCnt < hiddenLayersSettings.length) {
 		hiddenLayersSettings = hiddenLayersSettings.slice(0, hiddenLayersCnt);
@@ -25,8 +27,15 @@
 		<p class="text-lg font-bold">Layer {i + 1}</p>
 
 		<label>
-			Number of neurons<span class="text-red-600">*</span>:
-			<input type="number" bind:value={layer.neuronCnt} />
+			Number of neurons
+			{#if initialSetting}
+				<span class="text-red-600">*</span>:
+			{/if}
+			<input
+				disabled={!initialSetting}
+				type="number"
+				bind:value={layer.neuronCnt}
+			/>
 		</label>
 
 		<label>
