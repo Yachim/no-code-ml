@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let files: FileList;
+	export let trainingFiles: FileList;
 
 	const encoding = "utf-8";
 	const decoder = new TextDecoder(encoding);
@@ -84,14 +84,14 @@
 		return lines;
 	}
 
-	$: if (files) {
-		readCsvFile(files.item(0), {
+	$: if (trainingFiles) {
+		readCsvFile(trainingFiles.item(0), {
 			linesCnt: 1,
 		}).then((res) => {
 			allHeaders = res[0];
 		});
 
-		readCsvFile(files.item(0), {
+		readCsvFile(trainingFiles.item(0), {
 			linesCnt: maxLines,
 			maxCols: maxCols,
 		}).then((res) => {
@@ -143,10 +143,15 @@
 		</button>
 	</div>
 
-	<div class={!files ? "" : "flex justify-between"}>
-		<input type="file" accept=".csv" class="ignore" bind:files />
+	<div class={!trainingFiles ? "" : "flex justify-between"}>
+		<input
+			type="file"
+			accept=".csv"
+			class="ignore"
+			bind:files={trainingFiles}
+		/>
 
-		{#if files}
+		{#if trainingFiles}
 			<div class="flex gap-2 items-end">
 				<label>
 					Output column:
@@ -195,7 +200,7 @@
 		{/if}
 	</div>
 
-	{#if files && data.length > 0 && headers.length > 0}
+	{#if trainingFiles && data.length > 0 && headers.length > 0}
 		Preview:
 		<div class="overflow-auto">
 			<table class="w-full border overflow-scroll">

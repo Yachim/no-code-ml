@@ -28,7 +28,7 @@
 		includedCols,
 	} = defaultNetworks.multilayerPerceptron;
 
-	let files: FileList;
+	let trainingFiles: FileList;
 
 	const netQuery = useNet();
 
@@ -57,6 +57,7 @@
 	}
 
 	// FIXME: setting true with objects
+	// TODO: files
 	$: if ($netQuery.isSuccess) {
 		if (hiddenLayersCnt !== $netQuery.data.hiddenLayersCnt)
 			isNotSaved.set(true);
@@ -138,7 +139,7 @@
 		else if (!outputActivationFunc) buttonDisabled = true;
 		else if (!costFunc) buttonDisabled = true;
 		else if (!iterationCnt || iterationCnt <= 0) buttonDisabled = true;
-		else if (!files) buttonDisabled = true;
+		else if (!trainingFiles) buttonDisabled = true;
 		else if (outputCol === undefined || outputCol === null)
 			buttonDisabled = true;
 		else if (!includedCols || includedCols.length <= 0)
@@ -187,7 +188,7 @@
 
 		<div class="flex flex-col w-full p-4 gap-4">
 			<Controls bind:costFunc bind:iterationCnt {buttonDisabled} />
-			<DataReader bind:outputCol bind:includedCols bind:files />
+			<DataReader bind:outputCol bind:includedCols bind:trainingFiles />
 		</div>
 	</div>
 {/if}
