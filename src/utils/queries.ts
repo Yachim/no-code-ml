@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@sveltestack/svelte-query";
 import type { Net, NetList, NetListMember } from "../types/savedData";
 
-import { exists, readTextFile, BaseDirectory, writeTextFile, createDir, removeFile } from "@tauri-apps/api/fs";
+import { exists, readTextFile, BaseDirectory, writeTextFile, createDir, removeFile, writeBinaryFile, readBinaryFile } from "@tauri-apps/api/fs";
 import type { NetworkModelType } from "../types/network";
 import { currentNetId } from "./stores";
 
@@ -10,6 +10,9 @@ if (!await exists("nets", { dir: BaseDirectory.AppData }))
 
 if (!await exists("trained_params", { dir: BaseDirectory.AppData }))
 	await createDir("trained_params", { dir: BaseDirectory.AppData });
+
+if (!await exists("datasets", { dir: BaseDirectory.AppData }))
+	await createDir("datasets", { dir: BaseDirectory.AppData });
 
 // reads $APPDATA/nets.json
 async function readNetsFile(): Promise<NetList> {
@@ -41,13 +44,39 @@ async function deleteNetFile(id: string) {
 	await removeFile(`nets/net_${id}.json`, { dir: BaseDirectory.AppData });
 }
 
+// writes to $APPDATA/datasets/{type}_{net.id}.{format}
+async function writeTrainingDatasetFile(file: File, type: "training" | "testing", netId: string, format: "csv") {
+	await writeBinaryFile(
+		`datasets/${type}_${netId}.${format}`,
+		await file.arrayBuffer(),
+		{ dir: BaseDirectory.AppData }
+	)
+}
+
+// reads $APPDATA/datasets/{type}_{net.id}.{format}
+async function readTrainingDatasetFile(type: "training" | "testing", netId: string, format: "csv"): Promise<File> {
+	const fileName = `${type}_${netId}.${format}`;
+
+	const fileData = await readBinaryFile(
+		`datasets/${fileName}`,
+		{ dir: BaseDirectory.AppData }
+	);
+	return new File([fileData], fileName);
+}
+
+const universalDefaultNetwork = {
+	name: "Unnamed network",
+	trainingFileSaved: false,
+	initialSetting: true
+}
+
 export const defaultNetworks: {
 	[key in NetworkModelType]: Omit<Net, "id">
 } = {
 	"multilayerPerceptron": {
-		name: "Unnamed network",
+		...universalDefaultNetwork,
+
 		modelType: "multilayerPerceptron",
-		initialSetting: true,
 
 		hiddenLayersCnt: 2,
 		networkType: "regression",
@@ -65,7 +94,7 @@ export const defaultNetworks: {
 		iterationCnt: 10_000,
 
 		outputCol: -1,
-		includedCols: []
+		includedCols: [],
 	}
 };
 
@@ -148,7 +177,13 @@ export function useNet() {
 	const query = useQuery(["net", selectedNetId], async () => {
 		const net = await readNetFile(selectedNetId);
 
-		return net;
+		// FIXME: the app crashes
+		//const trainingFile = net.trainingFileSaved ? await readTrainingDatasetFile("training", net.id, "csv") : undefined;
+
+		return {
+			...net,
+			//trainingFile
+		};
 	}, {
 		enabled: false
 	});
@@ -169,13 +204,23 @@ export function useSaveNet() {
 	const client = useQueryClient();
 
 	// TODO: omit values from the net parameter that cannot be modified after initial setting (e.g. hiddenLayersCnt)
-	return useMutation(async (net: Omit<Net, "initialSetting" | "name">) => {
+	return useMutation(async (
+		net: Omit<Net, "initialSetting" | "name" | "trainingFileSaved"> & {
+			trainingFile: File | undefined
+		}
+	) => {
 		const { name } = await readNetFile(net.id);
+
+		// FIXME: the app slows down
+		if (net.trainingFile) {
+			await writeTrainingDatasetFile(net.trainingFile, "training", net.id, "csv");
+		}
 
 		await writeNetFile({
 			name,
 			...net,
-			initialSetting: false
+			initialSetting: false,
+			trainingFileSaved: !!net.trainingFile
 		});
 	}, {
 		onSuccess: () => {
@@ -184,6 +229,7 @@ export function useSaveNet() {
 	})
 }
 
+// FIXME: after deleting isNotSaved is still true
 export function useDeleteNet() {
 	const client = useQueryClient();
 

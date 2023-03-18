@@ -52,6 +52,13 @@
 		outputCol = $netQuery.data.outputCol;
 		includedCols = $netQuery.data.includedCols;
 
+		// FIXME: the app crashes
+		/*if ($netQuery.data.trainingFileSaved) {
+			const list = new DataTransfer();
+			list.items.add($netQuery.data.trainingFile);
+			trainingFiles = list.files;
+		}*/
+
 		// so it won't be overwriting values
 		netId = $netQuery.data.id;
 	}
@@ -119,6 +126,8 @@
 
 			outputCol,
 			includedCols,
+
+			trainingFile: !trainingFiles ? undefined : trainingFiles.item(0),
 		});
 	});
 

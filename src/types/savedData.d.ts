@@ -3,6 +3,7 @@ import type { ActivationFunc, CostFunc, HiddenLayers, NetworkModelType, NetworkT
 export type Net = NetListMember & {
 	// if false - some settings cannot be modified, e.g. neuron count, hidden layer count
 	initialSetting: boolean
+	trainingFileSaved: boolean
 } & ({
 	modelType: "multilayerPerceptron",
 
