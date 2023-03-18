@@ -18,10 +18,7 @@ tauri-build = { version = "1.2.1", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.2.4", features = ["dialog-confirm", "fs-all"] }
-chrono = "0.4.23"
-csv = "1.1.6"
-rand = "0.8.5"
-rand_distr = "0.4.3"
+rustml = { git = "https://github.com/Yachim/rustml", branch = "main"}
 
 [features]
 # by default Tauri runs in production mode

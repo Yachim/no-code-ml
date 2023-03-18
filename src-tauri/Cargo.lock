@@ -51,10 +51,7 @@ checksum = "224afbd727c3d6e4b90103ece64b8d1b67fbb1973b1046c2281eed3f3803f800"
 name = "app"
 version = "0.1.0"
 dependencies = [
- "chrono",
- "csv",
- "rand 0.8.5",
- "rand_distr",
+ "rustml",
  "serde",
  "serde_json",
  "tauri",
@@ -2170,6 +2167,17 @@ dependencies = [
  "libc",
  "linux-raw-sys",
  "windows-sys 0.45.0",
+]
+
+[[package]]
+name = "rustml"
+version = "0.1.0"
+source = "git+https://github.com/Yachim/rustml?branch=main#31e6c5b5567f2bea0fd9c6305f7cb3a73431e7ec"
+dependencies = [
+ "chrono",
+ "csv",
+ "rand 0.8.5",
+ "rand_distr",
 ]
 
 [[package]]
